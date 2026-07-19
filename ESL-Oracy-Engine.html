@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESL Oracy Master Engine - 200 Activities</title>
+    <style>
+        :root {
+            --bg-main: #f1f5f9;
+            --sidebar-bg: #0f172a;
+            --sidebar-hover: #1e293b;
+            --text-light: #f8fafc;
+            --text-dark: #334155;
+            --accent-blue: #2563eb;
+            --accent-green: #10b981;
+            --accent-orange: #f97316;
+            --accent-purple: #8b5cf6;
+            --card-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --sidebar-width: 360px;
+            --header-height: 56px;
+            --touch-target: 44px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-main: #0f172a;
+                --text-dark: #e2e8f0;
+                --card-bg: #1e293b;
+                --border-color: #334155;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            display: flex;
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -100%;
+            left: 0;
+            background: var(--accent-blue);
+            color: white;
+            padding: 8px 16px;
+            z-index: 1000;
+            font-weight: 600;
+            border-radius: 0 0 8px 0;
+            text-decoration: none;
+        }
+        .skip-link:focus { top: 0; }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border-right: 2px solid var(--accent-green);
+            contain: layout style;
+        }
+        .sidebar-header {
+            padding: 14px 18px;
+            background-color: #020617;
+            border-bottom: 1px solid #1e293b;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .sidebar-header h2 { font-size: 1.1rem; color: var(--accent-green); font-weight: 700; }
+        .sidebar-header p { font-size: 0.75rem; opacity: 0.8; margin-top: 2px; }
+
+        /* ── TOOLS PANEL ── */
+        .tools-panel {
+            background-color: #1e293b;
+            padding: 10px;
+            border-bottom: 2px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .tool-row {
+            display: flex;
+            gap: 6px;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tool-btn {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            flex-grow: 1;
+            transition: background 0.15s;
+            text-align: center;
+            min-height: var(--touch-target);
+            min-width: var(--touch-target);
+        }
+        .tool-btn:hover, .tool-btn:focus-visible { background-color: #1d4ed8; outline: 2px solid #93c5fd; outline-offset: 2px; }
+        .tool-btn.orange { background-color: var(--accent-orange); }
+        .tool-btn.orange:hover, .tool-btn.orange:focus-visible { background-color: #ea580c; }
+        .tool-btn.green { background-color: var(--accent-green); }
+        .tool-btn.green:hover, .tool-btn.green:focus-visible { background-color: #059669; }
+        .tool-btn.purple { background-color: var(--accent-purple); }
+        .tool-btn.purple:hover, .tool-btn.purple:focus-visible { background-color: #7c3aed; }
+        .tool-btn.red { background-color: #dc2626; }
+        .tool-btn.red:hover, .tool-btn.red:focus-visible { background-color: #b91c1c; }
+        .tool-btn.gray { background-color: #475569; max-width: 50px; }
+        .tool-btn.gray:hover, .tool-btn.gray:focus-visible { background-color: #334155; }
+
+        .dice-display {
+            background-color: #0f172a;
+            color: #fef08a;
+            padding: 6px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border: 1px solid #ca8a04;
+            min-width: 130px;
+        }
+        .timer-display {
+            background-color: #0f172a;
+            color: #f87171;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+        }
+        .scoreboard {
+            display: flex;
+            gap: 10px;
+            background: #0f172a;
+            padding: 6px;
+            border-radius: 6px;
+            justify-content: space-around;
+        }
+        .score-box { text-align: center; font-size: 0.75rem; }
+        .score-num {
+            font-size: 1rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            min-width: 32px;
+            transition: background 0.15s;
+        }
+        .score-num:hover { background: rgba(255,255,255,0.1); }
+
+        /* ── SEARCH ── */
+        .search-container {
+            padding: 8px 10px;
+            border-bottom: 1px solid #1e293b;
+            flex-shrink: 0;
+        }
+        .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            outline: none;
+            min-height: var(--touch-target);
+        }
+        .search-input::placeholder { color: #64748b; }
+        .search-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 2px rgba(37,99,235,0.3); }
+        .search-stats {
+            font-size: 0.7rem;
+            color: #64748b;
+            padding: 0 10px 6px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        /* ── TOPIC LIST ── */
+        .topic-list {
+            list-style: none;
+            overflow-y: auto;
+            flex-grow: 1;
+            scroll-behavior: smooth;
+        }
+        .topic-list::-webkit-scrollbar { width: 6px; }
+        .topic-list::-webkit-scrollbar-track { background: transparent; }
+        .topic-list::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .topic-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.12s ease;
+            color: #cbd5e1;
+            border-left: 4px solid transparent;
+            border-bottom: 1px solid #1e293b;
+            min-height: var(--touch-target);
+            display: flex;
+            align-items: center;
+        }
+        .topic-item:hover, .topic-item:focus-visible {
+            background-color: var(--sidebar-hover);
+            color: var(--text-light);
+            outline: none;
+        }
+        .topic-item.active {
+            background-color: var(--accent-blue);
+            color: white;
+            border-left: 4px solid var(--accent-green);
+            font-weight: 600;
+        }
+        .topic-item[aria-hidden="true"] { display: none; }
+
+        /* ── MAIN CONTENT ── */
+        .content-container {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            height: 100%;
+            scroll-behavior: smooth;
+        }
+        .welcome-card {
+            background: linear-gradient(135deg, #1e3a8a, #1e40af);
+            color: white;
+            padding: 15px 18px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .welcome-card h1 { font-size: 1.2rem; margin-bottom: 4px; }
+        .welcome-card p { font-size: 0.8rem; opacity: 0.9; line-height: 1.4; }
+
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .quick-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.82rem;
+            color: var(--text-dark);
+            min-height: var(--touch-target);
+            transition: border-color 0.15s, transform 0.1s;
+        }
+        .quick-btn:hover, .quick-btn:focus-visible { border-color: var(--accent-blue); transform: translateY(-1px); outline: none; }
+
+        /* ── TOPIC PANELS ── */
+        .topic-panel { display: none; }
+        .topic-panel.active { display: block; }
+        .panel-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #0f172a;
+            border-bottom: 3px solid var(--accent-green);
+            padding-bottom: 4px;
+            display: inline-block;
+        }
+        .panel-progress {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-left: 10px;
+            font-weight: 400;
+        }
+
+        .activity-list { display: flex; flex-direction: column; gap: 18px; }
+
+        .activity-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            transition: box-shadow 0.2s;
+            contain: layout style;
+        }
+        .activity-card:target,
+        .activity-card.highlighted {
+            box-shadow: 0 0 0 3px var(--accent-green), 0 4px 12px rgba(16,185,129,0.2);
+        }
+        .activity-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .activity-number {
+            background-color: #f0fdf4;
+            color: #16a34a;
+            font-weight: 700;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            border: 1px solid #bbf7d0;
+            flex-shrink: 0;
+        }
+        .activity-header h3 { font-size: 0.95rem; color: #0f172a; }
+        .activity-card-done .activity-number {
+            background-color: var(--accent-green);
+            color: white;
+            border-color: var(--accent-green);
+        }
+
+        .box-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+        .script-box, .speaking-box, .comp-box {
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            cursor: pointer;
+            transition: transform 0.08s, box-shadow 0.15s;
+        }
+        .script-box:active, .speaking-box:active, .comp-box:active { transform: scale(0.985); }
+        .script-box { background-color: #fef08a; border-left: 4px solid #ca8a04; color: #713f12; }
+        .speaking-box { background-color: #e0f2fe; border-left: 4px solid #0284c7; color: #0369a1; }
+        .comp-box { grid-column: span 2; background-color: #f3e8ff; border-left: 4px solid #7c3aed; color: #5b21b6; margin-top: 6px; }
+
+        .box-label {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .click-to-copy {
+            font-size: 0.6rem;
+            opacity: 0.6;
+            font-style: italic;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        .copy-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #16a34a;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            z-index: 999;
+            pointer-events: none;
+            opacity: 0;
+            transition: transform 0.25s, opacity 0.25s;
+        }
+        .copy-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        .tip-tag {
+            display: inline-block;
+            background-color: #f1f5f9;
+            color: #475569;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .activity-complete-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 6px 12px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 6px;
+            color: #16a34a;
+            font-weight: 600;
+            font-size: 0.78rem;
+            cursor: pointer;
+            min-height: 36px;
+            transition: background 0.15s;
+        }
+        .activity-complete-btn:hover, .activity-complete-btn:focus-visible { background: #dcfce7; outline: none; }
+        .activity-card-done .activity-complete-btn { background: #16a34a; color: white; border-color: #16a34a; }
+
+        @keyframes flashRed { 0% { background-color: #ef4444; } 100% { background-color: var(--bg-main); } }
+        @keyframes flashGreen { 0% { background-color: #10b981; } 100% { background-color: var(--bg-main); } }
+        .flash-active-red { animation: flashRed 0.4s ease-out; }
+        .flash-active-green { animation: flashGreen 0.4s ease-out; }
+
+        /* ── MOBILE ── */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            min-height: var(--touch-target);
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                height: 100%;
+                z-index: 50;
+                transition: left 0.25s ease;
+                width: min(360px, 85vw);
+            }
+            .sidebar.open { left: 0; }
+            .sidebar-toggle { display: flex; align-items: center; justify-content: center; }
+            .overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 40;
+            }
+            .overlay.open { display: block; }
+            .content-container { padding: 14px; }
+            .box-container { grid-template-columns: 1fr; }
+            .comp-box { grid-column: span 1; }
+        }
+
+        /* ── PRINT ── */
+        @media print {
+            .sidebar, .sidebar-toggle, .tools-panel, .search-container, .search-stats,
+            .quick-actions, .welcome-card, .copy-toast, .overlay, .activity-complete-btn { display: none !important; }
+            body { display: block; height: auto; overflow: visible; }
+            .content-container { padding: 0; overflow: visible; height: auto; }
+            .topic-panel { display: block !important; page-break-inside: avoid; }
+            .activity-card { break-inside: avoid; border: 1px solid #ccc; }
+            .script-box, .speaking-box, .comp-box { cursor: default; }
+        }
+    </style>
+</head>
+<body id="mainBody">
+    <a href="#mainContent" class="skip-link">Skip to content</a>
+
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <nav class="sidebar" id="sidebar" aria-label="Topics navigation">
+        <div class="sidebar-header">
+            <h2>ESL Master Oracy Engine</h2>
+            <p>200 Complete Native Data Sets</p>
+        </div>
+
+        <div class="tools-panel">
+            <div class="tool-row">
+                <button class="tool-btn orange" onclick="rollVoiceDice()" aria-label="Roll voice dice">Voice Dice</button>
+                <div class="dice-display" id="diceResult" role="status" aria-live="polite">Normal Voice</div>
+            </div>
+            <div class="tool-row">
+                <button class="tool-btn green" onclick="toggleTimer()" aria-label="Toggle timer" id="timerBtn">Timer</button>
+                <div class="timer-display" id="timerValue" role="timer" aria-live="off">00:30</div>
+                <button class="tool-btn gray" onclick="resetTimer()" aria-label="Reset timer">Rst</button>
+            </div>
+            <div class="tool-row">
+                <button class="tool-btn purple" onclick="triggerAudioEffect('correct')" aria-label="Play correct sound">Correct</button>
+                <button class="tool-btn red" onclick="triggerAudioEffect('wrong')" aria-label="Play wrong sound">Wrong</button>
+            </div>
+            <div class="scoreboard">
+                <div class="score-box">
+                    <span style="color:#f87171;">Team A:</span>
+                    <span class="score-num" id="scoreA" onclick="adjustScore('a',1)" oncontextmenu="adjustScore('a',-1);return false;" role="button" tabindex="0" aria-label="Team A score. Click to add, right click to subtract.">0</span>
+                </div>
+                <div class="score-box">
+                    <span style="color:#60a5fa;">Team B:</span>
+                    <span class="score-num" id="scoreB" onclick="adjustScore('b',1)" oncontextmenu="adjustScore('b',-1);return false;" role="button" tabindex="0" aria-label="Team B score. Click to add, right click to subtract.">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <input type="search" class="search-input" id="searchInput" placeholder="Search activities..." aria-label="Search activities" autocomplete="off">
+        </div>
+        <div class="search-stats" id="searchStats">20 topics | 200 activities</div>
+        <ul class="topic-list" id="sidebarList" role="listbox" aria-label="Topic list"></ul>
+    </nav>
+
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Toggle sidebar menu">&#9776;</button>
+
+    <main class="content-container" id="mainContent">
+        <div class="welcome-card">
+            <h1>Fully Populated Resource Dashboard</h1>
+            <p>Every topic features custom, non-repeating data scripts designed to prevent Turkish linguistic errors and maximize student oracy engagement.</p>
+        </div>
+        <div class="quick-actions">
+            <button class="quick-btn" onclick="randomActivity()">Random Activity</button>
+            <button class="quick-btn" onclick="resetAllProgress()">Reset Progress</button>
+            <button class="quick-btn" onclick="window.print()">Print All</button>
+            <button class="quick-btn" onclick="expandAll()">Expand All Topics</button>
+        </div>
+        <div id="panelsContainer"></div>
+    </main>
+
+    <div class="copy-toast" id="copyToast">Copied to clipboard</div>
+
+    <script>
+    (function() {
+        "use strict";
+
+        // ── AUDIO ENGINE ──
+        let audioCtx = null;
+        function getAudioCtx() {
+            if (!audioCtx) {
+                try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+                catch(e) { return null; }
+            }
+            if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+            return audioCtx;
+        }
+        function playTone(freq, type, duration, startTime) {
+            const ctx = getAudioCtx();
+            if (!ctx) return;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, startTime);
+            gain.gain.setValueAtTime(0.06, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(startTime);
+            osc.stop(startTime + duration);
+        }
+        window.triggerAudioEffect = function(type) {
+            const now = getAudioCtx() ? getAudioCtx().currentTime : 0;
+            const body = document.getElementById("mainBody");
+            body.classList.remove("flash-active-red", "flash-active-green");
+            void body.offsetWidth;
+            if (type === "correct") {
+                body.classList.add("flash-active-green");
+                playTone(523, "sine", 0.08, now);
+                playTone(659, "sine", 0.08, now + 0.08);
+                playTone(783, "sine", 0.08, now + 0.16);
+                playTone(1046, "sine", 0.2, now + 0.24);
+            } else {
+                body.classList.add("flash-active-red");
+                playTone(150, "sawtooth", 0.25, now);
+            }
+        };
+
+        // ── STATE PERSISTENCE ──
+        const STORAGE_KEY = "esl_engine_state";
+        function loadState() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+            catch(e) { return {}; }
+        }
+        function saveState(state) {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+            catch(e) {}
+        }
+        let state = loadState();
+        if (!state.scores) state.scores = { a: 0, b: 0 };
+        if (!state.completed) state.completed = {};
+        if (!state.activeTopic) state.activeTopic = 0;
+
+        // ── TIMER ──
+        let timerInterval = null;
+        let timerSeconds = state.timerSeconds || 30;
+        const timerValueEl = document.getElementById("timerValue");
+        const timerBtnEl = document.getElementById("timerBtn");
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timerSeconds / 60).toString().padStart(2, "0");
+            const s = (timerSeconds % 60).toString().padStart(2, "0");
+            timerValueEl.textContent = m + ":" + s;
+        }
+        window.toggleTimer = function() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerBtnEl.textContent = "Timer";
+            } else {
+                timerBtnEl.textContent = "Pause";
+                timerInterval = setInterval(function() {
+                    if (timerSeconds > 0) {
+                        timerSeconds--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        timerBtnEl.textContent = "Timer";
+                        triggerAudioEffect("wrong");
+                    }
+                }, 1000);
+            }
+        };
+        window.resetTimer = function() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerSeconds = 30;
+            state.timerSeconds = 30;
+            saveState(state);
+            updateTimerDisplay();
+            timerBtnEl.textContent = "Timer";
+        };
+        updateTimerDisplay();
+
+        // ── DICE ──
+        const diceStyles = [
+            "Robot Voice!", "Monster Voice!", "Whisper Mode!", "Royal Accent!",
+            "Squeaky Voice!", "Super Fast!", "Slow Motion!", "Pirate Voice!",
+            "Opera Singer!", "News Anchor!", "Alien Voice!", "Baby Voice!"
+        ];
+        window.rollVoiceDice = function() {
+            document.getElementById("diceResult").textContent =
+                diceStyles[Math.floor(Math.random() * diceStyles.length)];
+        };
+
+        // ── SCORES ──
+        window.adjustScore = function(team, val) {
+            const key = team.toLowerCase();
+            state.scores[key] = Math.max(0, (state.scores[key] || 0) + val);
+            document.getElementById("score" + team.toUpperCase()).textContent = state.scores[key];
+            saveState(state);
+        };
+        document.getElementById("scoreA").textContent = state.scores.a;
+        document.getElementById("scoreB").textContent = state.scores.b;
+
+        // ── COPY TO CLIPBOARD ──
+        let toastTimeout = null;
+        function showToast(msg) {
+            const toast = document.getElementById("copyToast");
+            toast.textContent = msg || "Copied to clipboard";
+            toast.classList.add("show");
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(function() { toast.classList.remove("show"); }, 1800);
+        }
+        window.copyToChat = function(el) {
+            const text = el.innerText
+                .replace(/.*Reading Script.*?:\s*\n?/i, "")
+                .replace(/.*Click to copy.*$/gm, "")
+                .trim();
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function() {
+                    var orig = el.style.backgroundColor;
+                    el.style.backgroundColor = "#bbf7d0";
+                    showToast();
+                    setTimeout(function() { el.style.backgroundColor = orig; }, 250);
+                }).catch(function() { fallbackCopy(text); });
+            } else {
+                fallbackCopy(text);
+            }
+        };
+        function fallbackCopy(text) {
+            var ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand("copy"); showToast(); }
+            catch(e) { showToast("Copy failed - select manually"); }
+            document.body.removeChild(ta);
+        }
+
+        // ── PROGRESS TRACKING ──
+        function toggleComplete(topicId, actIndex) {
+            var key = topicId + "_" + actIndex;
+            if (state.completed[key]) {
+                delete state.completed[key];
+            } else {
+                state.completed[key] = Date.now();
+            }
+            saveState(state);
+            renderProgress();
+        }
+        function isComplete(topicId, actIndex) {
+            return !!state.completed[topicId + "_" + actIndex];
+        }
+        function renderProgress() {
+            document.querySelectorAll(".activity-card").forEach(function(card) {
+                var tid = parseInt(card.dataset.topicId);
+                var aid = parseInt(card.dataset.actIndex);
+                var btn = card.querySelector(".activity-complete-btn");
+                if (isComplete(tid, aid)) {
+                    card.classList.add("activity-card-done");
+                    if (btn) btn.textContent = "Completed";
+                } else {
+                    card.classList.remove("activity-card-done");
+                    if (btn) btn.textContent = "Mark Done";
+                }
+            });
+            document.querySelectorAll(".panel-title").forEach(function(title) {
+                var tid = parseInt(title.closest(".topic-panel").dataset.topicId);
+                var topic = DATA.find(function(t) { return t.id === tid; });
+                if (!topic) return;
+                var done = topic.activities.filter(function(_, i) { return isComplete(tid, i); }).length;
+                var span = title.querySelector(".panel-progress");
+                if (!span) {
+                    span = document.createElement("span");
+                    span.className = "panel-progress";
+                    title.appendChild(span);
+                }
+                span.textContent = done + "/" + topic.activities.length + " done";
+            });
+        }
+        window.resetAllProgress = function() {
+            if (confirm("Reset all progress and scores?")) {
+                state.completed = {};
+                state.scores = { a: 0, b: 0 };
+                saveState(state);
+                document.getElementById("scoreA").textContent = "0";
+                document.getElementById("scoreB").textContent = "0";
+                renderProgress();
+                showToast("Progress reset");
+            }
+        };
+
+        // ── MOBILE SIDEBAR ──
+        window.toggleSidebar = function() {
+            document.getElementById("sidebar").classList.toggle("open");
+            document.getElementById("overlay").classList.toggle("open");
+        };
+        window.closeSidebar = function() {
+            document.getElementById("sidebar").classList.remove("open");
+            document.getElementById("overlay").classList.remove("open");
+        };
+
+        // ── SEARCH ──
+        var searchInput = document.getElementById("searchInput");
+        var searchStats = document.getElementById("searchStats");
+        searchInput.addEventListener("input", function() {
+            var q = this.value.toLowerCase().trim();
+            var items = document.querySelectorAll(".topic-item");
+            var matchedTopics = 0;
+            var matchedActivities = 0;
+            items.forEach(function(item) {
+                var tid = parseInt(item.dataset.target.replace("panel-", ""));
+                var topic = DATA.find(function(t) { return t.id === tid; });
+                if (!topic) return;
+                if (!q) {
+                    item.removeAttribute("aria-hidden");
+                    matchedTopics++;
+                    matchedActivities += topic.activities.length;
+                    return;
+                }
+                var topicMatch = topic.title.toLowerCase().includes(q);
+                var actMatches = topic.activities.filter(function(a) {
+                    return a.title.toLowerCase().includes(q) ||
+                           a.script.toLowerCase().includes(q) ||
+                           a.speaking.toLowerCase().includes(q) ||
+                           a.game.toLowerCase().includes(q);
+                }).length;
+                if (topicMatch || actMatches > 0) {
+                    item.removeAttribute("aria-hidden");
+                    matchedTopics++;
+                    matchedActivities += topicMatch ? topic.activities.length : actMatches;
+                } else {
+                    item.setAttribute("aria-hidden", "true");
+                }
+            });
+            searchStats.textContent = matchedTopics + " topics | " + matchedActivities + " activities" + (q ? " found" : "");
+            if (!q && matchedTopics > 0) {
+                var firstVisible = document.querySelector(".topic-item:not([aria-hidden])");
+                if (firstVisible) firstVisible.click();
+            }
+        });
+
+        // ── RANDOM ACTIVITY ──
+        window.randomActivity = function() {
+            var tIdx = Math.floor(Math.random() * DATA.length);
+            var aIdx = Math.floor(Math.random() * DATA[tIdx].activities.length);
+            selectTopic(tIdx);
+            setTimeout(function() {
+                var card = document.querySelector('[data-topic-id="' + DATA[tIdx].id + '"][data-act-index="' + aIdx + '"]');
+                if (card) {
+                    card.scrollIntoView({ behavior: "smooth", block: "center" });
+                    card.classList.add("highlighted");
+                    setTimeout(function() { card.classList.remove("highlighted"); }, 2500);
+                }
+            }, 100);
+        };
+
+        // ── EXPAND ALL ──
+        window.expandAll = function() {
+            document.querySelectorAll(".topic-panel").forEach(function(p) { p.classList.add("active"); });
+        };
+
+        // ── KEYBOARD NAV ──
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape") closeSidebar();
+        });
+        document.getElementById("scoreA").addEventListener("keydown", function(e) {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); adjustScore("a", 1); }
+        });
+        document.getElementById("scoreB").addEventListener("keydown", function(e) {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); adjustScore("b", 1); }
+        });
+
+        // ── DATA (all 20 topics, 10 activities each = 200) ──
+        var DATA = [
+            {
+                id: 1, title: "1. Self Introductions",
+                activities: [
+                    { title: "The Echo Mic", script: "A: Hello! I am Ali. I am 9.<br>B: Hello! Ali is 9. I am Can. I am 10.", speaking: "Echo partner's text data accurately before adding personal details into the turn loop.", game: "How old is Ali? Listener must claim the digit inside a 3-second limit to win.", tip: "Watch for dropping unvoiced /h/ variations during greetings." },
+                    { title: "Comic Bubble Race", script: "Hero: 'Hi! I am Batman.'<br>Villain: 'Cool! I am Joker. I am 10. Are you 10?'", speaking: "Select an avatar layout block on screen and voice lines using maximal cartoon pitch shifts.", game: "SPEED CRYPT: Is Joker 9 years old? Scream YES or NO immediately based on script visuals.", tip: "Short, graphic text units keep spatial anxiety baseline drops minimal." },
+                    { title: "The Secret Agent Intro", script: "Agent X: 'Stop! I am Agent X. I am 10 years old.'<br>Agent Y: 'Copy that, Agent X. Move forward!'", speaking: "Deliver the script lines entirely in a stealthy classroom whisper tone variant.", game: "DEEP CODE DETECTIVE: Read silently. What letter is the secret agent named after?", tip: "Vocal character play works wonders to bypass performance fear thresholds." },
+                    { title: "Identity Card Swap", script: "Profile Array: Name: Harry Potter | Age: 11<br>Output Target: 'Hello, I am Harry Potter and I am 11.'", speaking: "Adopt the assigned identity text block and declare values confidently as your true profile.", game: "CARD FLASH: Teacher hides the text string. Partner must recall name/age data from memory.", tip: "Forces target word processing without querying internal native data sets." },
+                    { title: "Fast Counting Ball", script: "Teacher: '[Tosses plush toy]'<br>Student: 'Boom! I am Elif. I am 9. [Tosses toy back]'", speaking: "Catch screen tracking item. Clear the baseline identity tags within an explicit 2-second target window.", game: "PASS-CHAIN CHECK: What name did the previous speaker say? Next speaker must clear it first.", tip: "Blocks translation loops from forming within native sentence setups." },
+                    { title: "The Lie Detective", script: "Manifest: '1. I am Emre. 2. I am 10 years old. 3. I am a green monster.'", speaking: "Read out the three explicit data lines with a completely straight performance face.", game: "LIAR VERIFICATION: Which sentence index is the absolute structural lie? Click code number.", tip: "Utilizes baseline verb states natively in full interactive context options." },
+                    { title: "Rhythmic Clap Intros", script: "Loop: [Clap-Clap-Snap] 'I am / Efe / I am / 10!'<br>[Clap-Clap-Snap] 'She is / Sude / She is / 9!'", speaking: "Maintain structural hand claps while nesting personal metrics smoothly into the rhythm cadence.", game: "METRONOME COMP: Did Efe state he was 9 or 10? Stomp once for 9, twice for 10.", tip: "Directly combats syllable-timed speech delivery habits from native speakers." },
+                    { title: "Guess Who Card", script: "Cryptic Text: 'He is 10. He is a boy. His favorite color is red.'", speaking: "One student reads out the profile parameters. The target peer group tracks internal datasets.", game: "CHRONO SCANNER: Identify which classroom classmate matches the read criteria before timer fires.", tip: "Builds rigorous active listening patterns alongside basic vocabulary processing." },
+                    { title: "Puppet Master Greeting", script: "Puppet A: 'Hello! What is your name?'<br>Puppet B: 'Hi! My name is Leo. I am a happy lion!'", speaking: "Manipulate toy physical items while outputting dialog tracks completely via character masks.", game: "MONSTER LOG: Is Leo a sad lion? Shouting group must correct the target entry.", tip: "Highly safe and effective strategy for introverted young learners." },
+                    { title: "The Mirror Match", script: "A: 'I am here!' [Jaw dropped open]<br>B: 'I am here!' [Exact layout duplication]", speaking: "Exaggerate lip and jaw openings during the live camera reading string execution.", game: "MUSCLE BALANCE DETECT: Did speaker A use a wide smile or a round layout? Claim target tag.", tip: "Isolates and trains target oral spacing constraints for foreign English vowels." }
+                ]
+            },
+            {
+                id: 2, title: "2. Classroom Objects",
+                activities: [
+                    { title: "The Blindfold Guide", script: "A: 'Look! This is a pencil. That is a book.'<br>B: 'Okay! I am touching the pencil now.'", speaking: "Direct a blindfolded classmate around local workspace targets using clear demonstrative syntax frames.", game: "SPELL STEAL: Spell the item object out loud to claim double score units for your squad.", tip: "Directly anchors demonstrative spatial indicators via physical coordination tasks." },
+                    { title: "Spy Glass Riddles", script: "Clue Card: 'It is yellow. It is long. It is on the table.'<br>Output: 'It is a pencil!'", speaking: "Decode the visual riddle block to peers without mentioning the hidden solution text keyword.", game: "CRACK THE VECTOR: Identify the hidden room object using three specific attributes from text.", tip: "Replaces traditional heavy reading passages with short target strings." },
+                    { title: "The Three S Plurals", script: "Matrix: Book/s/ | Dog/z/ | Box/iz/<br>Target Lines: 'Two books. Three dogs. Four boxes.'", speaking: "Read out the changing plural noun configurations on screen, hitting the desk base on voiced triggers.", game: "COUNT CAPTURE: How many total structural boxes were parameterised? Log number digit.", tip: "Eliminates flat native morphophonemic errors by isolating final consonant voicing." },
+                    { title: "Magic Disappearing Box", script: "A: 'Where is the ruler?'<br>B: 'Look! It is gone! The box is empty!'", speaking: "Review an onscreen array card block for 4 seconds before one target component transitions to invisible.", game: "VANISH MATRIX: State the missing object using a complete sentence within 2 seconds.", tip: "Promotes rapid spatial syntax formulation and active memory tracking." },
+                    { title: "Tap and Shout", script: "Matrix: [Ruler] -> [Eraser] -> [Notebook]<br>Scream Loop: 'Ruler! Eraser! Notebook!'", speaking: "Read individual highlighted vocabulary terms instantly as the teacher changes panel illumination.", game: "RAPID EYE TRACKER: Hit the matching interactive panel before highlighting velocity increases.", tip: "Directly combats reading hesitation by targeting immediate sight-word automaticity." },
+                    { title: "Object Auction Game", script: "Form: 'I want three blue pens for ten points!'<br>Auctioneer: 'Sold! Three pens for ten points!'", speaking: "Allocate points value tokens to bid on digital target blocks by reading syntax combinations.", game: "BALANCE AUDIT: Did the purchase contain blue pens or red pens? Check statement text.", tip: "Combines count systems and item nouns seamlessly inside high-stakes class loops." },
+                    { title: "Sound Sorting Race", script: "A: 'Chair! Ch-ch-chair!' [Jump Left]<br>B: 'Sharpener! Sh-sh-sharpener!' [Jump Right]", speaking: "Chant target cards while sorting via positional jumping tracks.", game: "ACOUSTIC MISSILE: Hold up correct color markers corresponding to matching sound groupings.", tip: "Clears up target spelling block confusion profiles common to young A1 learners." },
+                    { title: "Slap Board Script", script: "Text Prompt: 'Use this to cut paper.'<br>Vocalization: 'Scissors! These are scissors!'", speaking: "Scan text arrays rapidly to link functional actions with correct noun definitions.", game: "INTERACTIVE SLAP SPRINT: First user to tap the screen object after silent reading wins the quadrant.", tip: "Establishes concrete cognitive tracks connecting item operations to text strings." },
+                    { title: "Bag Explorer Dialogue", script: "A: 'What is in your bag?'<br>B: '[Feels blindly] It is cold. It is long. It is a pen!'", speaking: "Search school bags blindly. Deliver real-time tactile attributes before pulling out targets to confirm.", game: "ADJECTIVE AUDIT: Name the exact tactile parameters chosen by the presenter during the guessing loop.", tip: "Nurtures spontaneous real-time generation of spatial descriptors under active game settings." },
+                    { title: "The Echo Chamber", script: "Teacher: '[Low pitch] Ru-ler.'<br>Class: '[Low pitch] Ru-ler!'", speaking: "Replicate precise tone modifications applied by the teacher while holding items up to the camera.", game: "ACOUSTIC RADAR: Did the class duplicate the correct structural tone scale values? Vote live.", tip: "Uses vocal pitch modifications to map phonemic recall into permanent memory." }
+                ]
+            },
+            {
+                id: 3, title: "3. Family Members",
+                activities: [
+                    { title: "The Royal Tree Roleplay", script: "King: 'Who is he?'<br>Prince: 'He is my brother. He is the prince!'", speaking: "Adopt extreme royal character identities and execute dialogue text blocks using snobbish tones.", game: "TREE RADAR: Identify the relationship link between the prince and the king using text data.", tip: "Transforms static graph worksheets into active, dramatic group roleplay challenges." },
+                    { title: "Whispered Lineage", script: "Secret String: 'My mother's sister is my aunt.'<br>Output Tag: 'AUNT!'", speaking: "Deliver relationship definitions down the audio sequence track using rhythmic whispering blocks.", game: "RELATIONSHIP MAZE: Who is my mother's sister? Decode text options on screen to lock points.", tip: "Pairs micro listening targets with orthographic processing validation metrics." },
+                    { title: "Celebrity Mashup Tree", script: "Text Clue: 'Shrek is the father. Fiona is the mother. Who is he?'<br>Target: 'He is Baby Shrek!'", speaking: "Analyze absurd cross-over animation family structures and verbalize relationship conclusions.", game: "CHARACTER GRAPH: Select the correct hybrid child profile icon based on text constraints.", tip: "High-interest visual themes keep reading aversion low across A1 cohorts." },
+                    { title: "Possessive Pronoun Toss", script: "Matrix: [Girl + notebook]<br>Chant: 'This is HER notebook! That is HIS game!'", speaking: "Catch screen items. Match avatar layout markers to fire target possessive frameworks instantly.", game: "MODIFIER AUDIT: Did the girl own the notebook or the game? Read display fields.", tip: "Blocks the persistent native error of applying uniform possessive suffixes." },
+                    { title: "Voice Actor Audition", script: "Baby: 'Wah! My sister is big!'<br>Grandpa: 'Heh, my sister is old!'", speaking: "Deliver family lines while modulating acoustic properties to reflect character ages.", game: "CHARACTER MATCH: Tap the target node that claimed their sibling was highly aged.", tip: "Stretches speaking endurance via entertaining comedic play rules." },
+                    { title: "Photo Match Description", script: "Text: 'This family has one grandmother, two daughters, and one small dog.'", speaking: "One player executes text data blocks out loud; their partner tracks graphic matching configurations.", game: "DECOY RADAR: Spot the false background graphic containing an unauthorized brother element.", tip: "Improves textual decoding validation against geometric visual options." },
+                    { title: "The Cartoon Interview", script: "Interrogator: 'Welcome! Is she your mother?'<br>Star: 'No! She is my manager! She is crazy!'", speaking: "Execute a live broadcast interview layout using preset structural questionnaire text templates.", game: "RECORD DECRYPTOR: Identify the true management relationship linking the target entities.", tip: "Builds functional sentence generation habits using immediate situational roleplay." },
+                    { title: "Syllable Clap Trees", script: "Rhythm: 'Mo-ther [2] / Grand-fa-ther [3] / Fa-ther [2]'", speaking: "Perform physical desk taps corresponding to structural syllable values in kinship terms.", game: "BEAT BOX: Find the longest kinship noun term from the display list based on sound count.", tip: "Directly treats native errors regarding flat syllable timing stresses." },
+                    { title: "The Blueprint Tracker", script: "Directive: 'Move up to Father. Move left to Uncle.'<br>Vocalization: 'Hello Uncle!'", speaking: "Navigate an active family graph framework by executing rapid structural text commands.", game: "NAVIGATION AUDIT: Did the tracking block end on the uncle or the cousin? Confirm visual.", tip: "Assists non-linear readers with geometric parsing layouts on screen." },
+                    { title: "The Family Fixer", script: "Teacher: 'This is my son [Points to old lady graphic].'<br>Group: 'Stop! She is your grandmother!'", speaking: "Slam desks and shout corrective updates as the teacher delivers deliberately flawed text claims.", game: "REPAIR SCORE: First team to speak the correct gender/relationship patch scores triple points.", tip: "Maintains intense concentration metrics across the whole learner cohort." }
+                ]
+            },
+            {
+                id: 4, title: "4. Feelings & Emotions",
+                activities: [
+                    { title: "The Emotion Dice", script: "Text: 'I want my apple juice right now!'<br>Options: 1. Angry | 2. Scared | 3. Tired", speaking: "Roll virtual overlay values. Deliver a text block entirely within that distinct emotional profile.", game: "STATE DECRYPTOR: Match the voice profile to the correct written index target.", tip: "Eliminates visual reading fatigue by infusing immediate acting tasks." },
+                    { title: "Mouth Shape Balance", script: "Pairs: Angry vs Hungry<br>Drill: 'I am angry! I am hungry!'", speaking: "Exaggerate jaw expansion variations for 'angry' vs neutral vocalization during high-speed loops.", game: "TARGET SOUND: Click the icon matching whether the speaker needs food or a combat zone.", tip: "Resolves short vowel production overlap vectors common in native systems." },
+                    { title: "Silent Movie Script", script: "Actor: '[Mimes intense weeping]'<br>Reader: 'Oh no! She is very sad today!'", speaking: "One player translates emotional vectors via mime; their partner decodes the matching text string.", game: "ACTOR DATA LINK: Pick the text label that perfectly matches the performer's kinetic actions.", tip: "Pairs physical expression metrics with standalone functional reading targets." },
+                    { title: "The Guessing Hot Seat", script: "Class: '[Acts terrified, trembling arms]'<br>Target: 'Are you scared?' -> Class: 'YES!'", speaking: "Face away from display. Analyze peer physical behaviors to extract target emotion vectors.", game: "HOT SEAT VELOCITY: Clear the target hidden word string under a 15-second tracking limit.", tip: "Maximizes conversational peer spoken output volumes across the cohort." },
+                    { title: "The Volume Slider", script: "Text: 'I am super excited! Look at me!'<br>Scale: [Whisper] -> [Maximum Power]", speaking: "Adjust vocal output intensities continuously to track a moving cursor on a screen graph.", game: "SCALE TRACK: Did the reader drop below baseline threshold during whisper tasks?", tip: "Engages active breath support training to eliminate speech timidity blocks." },
+                    { title: "Comic Outbursts", script: "Panel 1: 'BOOM!' | Panel 2: 'Ouch! I am angry!' | Panel 3: 'Heh! Now I am happy.'", speaking: "Deliver high-energy comic strip exclamations in pairs matching target text assets.", game: "MOOD SEQUENCE: Reconstruct the emotional path order using initial text indicators.", tip: "Reduces reading resistance by replacing paragraphs with punchy text frames." },
+                    { title: "Energy Barometer", script: "Low: 'I am tired... I am bored...' | High: 'I am excited! I am happy!'", speaking: "Incorporate posture drops for low-energy descriptors and vertical jumps for high-energy sets.", game: "METRIC AUDIT: Classify new vocabulary cards into high/low kinetic energy bins.", tip: "Anchors semantic terminology into long-term channels via physical action." },
+                    { title: "Ping Pong Dialogues", script: "A: 'Are you okay?' | B: 'No, I am hot!'<br>A: 'Are you sad?' | B: 'No, I am cold!'", speaking: "Exchange rapid emotional status queries across the theater layout matching strict rhythm profiles.", game: "FLOW CONTROL: Maintain the syntax exchange loop without pauses for 30 seconds.", tip: "Automates fundamental question-answer construction sequences for fluent deployment." },
+                    { title: "Sound Effect Match", script: "Audio: [Yawning sound]<br>Board: '1. Angry | 2. Tired | 3. Happy'", speaking: "Analyze incoming noise attributes and read aloud the matching structural definition sentence.", game: "TRANSCRIPTION LINK: Select the text index that resolves the background sound file.", tip: "Links non-linguistic audio inputs directly to functional grammatical text strings." },
+                    { title: "The Mood Switcher", script: "Text: 'I am walking to school and everything is fine... [SHOCK!] ...and now I see a ghost!'", speaking: "Alter vocal emotional registers mid-sentence upon receiving a live prompt cue word from the teacher.", tip: "Disrupts rigid word-by-word reading styles while expanding flexible oral expression." }
+                ]
+            },
+            {
+                id: 5, title: "5. Body Parts",
+                activities: [
+                    { title: "Monster Lab Blueprints", script: "Blueprint: 'The alien has three red eyes, four long arms, and one big foot.'", speaking: "Deliver explicit text instructions to a partner to construct an accurate biological illustration.", game: "ANATOMICAL AUDIT: Count structural items drawn to verify execution against text rules.", tip: "Frames reading as active blueprints instead of pass-fail comprehension logs." },
+                    { title: "Simon Says Remix", script: "Simon: 'Touch your teeth! Touch your foot! Touch your feet!'", speaking: "Execute physical actions rapidly matching irregular plural structures delivered via game lines.", game: "IRREGULAR SHIFT: Differentiate foot/feet and tooth/teeth instantly under pressure.", tip: "Isolates and trains difficult plural noun properties using spatial sensory processing." },
+                    { title: "Doctor Patient Skit", script: "Doctor: 'What is the matter?'<br>Patient: 'Oh! My head is blue and my ears are big!'", speaking: "Conduct diagnostic checkups using medical intake forms and unusual symptom arrays.", game: "DIAGNOSTIC CHART: What specific primary color was the patient's head parameterised as?", tip: "Embeds reading development inside interactive real-world roleplay frames." },
+                    { title: "Laser Pointer Sprint", script: "Map: [Anatomy Vector]<br>Target: [Shoulders] -> Output: 'Shoulders!'", speaking: "Scream out the text tag instantly as the laser illuminates specific muscle segments.", game: "QUADRANT CONQUEST: Lock in map sectors by decoding labels before competitors react.", tip: "Maintains intense peer engagement during mechanical vocabulary loading stages." },
+                    { title: "Phonetic Body Taps", script: "Short /e/: Head! Leg! | Long /i:/: Knees! Teeth!", speaking: "Tap appropriate physical limbs matching specific target English vowel length parameters.", game: "RHYME STEAL: Supply an additional anatomical term matching the target vowel class live.", tip: "Links structural touch indicators to cognitive vowel classification systems." },
+                    { title: "Shadow Monster Claims", script: "A: 'Look at the shadow! It has a big head!'<br>B: 'No! It has long fingers!'", speaking: "Debate the dimensions of strange screen silhouettes using targeted sentence loops.", game: "SILHOUETTE TRIVIA: Vote on which animal shape the hand silhouette accurately mirrors.", tip: "Encourages spatial vocabulary generation within fluid, unscripted group discussions." },
+                    { title: "The Giant Label Race", script: "A: 'Grab the leg card!'<br>B: 'I am reading it! The leg goes here!'", speaking: "Coordinate text asset drops onto matching skeletal structures under strict counting clock frames.", game: "GRID SPEED: First team to align all labels safely claims a triple bonus drop.", tip: "Merges text character identification with precision manual coordination tasks." },
+                    { title: "Silly X-Ray Profiles", script: "Text: 'This boy has a banana in his stomach and a toy car in his head.'", speaking: "Decode unusual cartoon diagnostic records aloud to verify system data maps.", game: "RADAR X-RAY: Identify the hidden fruit asset inside the target chest cavity view.", tip: "Engages humor tracks to eliminate reading avoidance blocks instantly." },
+                    { title: "Tongue Twister Limbs", script: "Chant: 'Ten tiny toes touching tomatoes on top of Tom's television!'", speaking: "Repeat consonant cluster loops three times fast while increasing vocal velocity markers safely.", tip: "Polishes muscular articulation control loops for complex English phonetic starts." },
+                    { title: "Anatomy Beat Box", script: "Beat: [Stomp-Clap] 'Eyes! Ears! Mouth! Nose!'<br>[Stomp-Clap] 'Hands! Arms! Legs! Toes!'", speaking: "Coordinate body part declarations precisely with an active classroom percussion track.", game: "METRIC DROP: Identify which row member missed dropping their word onto the sync beat.", tip: "Uses musical timing to lock accurate English word stress rules down firmly." }
+                ]
+            },
+            {
+                id: 6, title: "6. Clothes & Colors",
+                activities: [
+                    { title: "Fashion Runway Run", script: "Host: 'Look at Efe! He is wearing a green hat and a yellow t-shirt!'", speaking: "Strut past your live camera while a partner reads your style card.", game: "STYLE TRAP: Read along. Did the presenter say blue or green? Flag the error!", tip: "Converts descriptive reading into an active performance challenge." },
+                    { title: "Wrong Color Alarm", script: "Graphic: [Pink Banana] -> Output: 'Stop! A pink banana is crazy!'", speaking: "Identify inaccurate color pairings and speak the grammatical fix using correct word order.", game: "ORDER DEFENSE: Spot modifier placement errors within text streams to gain score.", tip: "Directly treats the persistent native habit of breaking modifier sequences." },
+                    { title: "The Packing Checklist", script: "Text: 'Pack two blue socks, one red dress, and one green shoe.'", speaking: "Read out text manifests to coordinate your classmate's gear selection.", game: "MANIFEST COUNT: Add up all the requested clothing items. What is the final number?", tip: "Minimizes reading input down to high-impact, non-threatening micro text pieces." },
+                    { title: "Clothes Line Phonics", script: "Cards: 'Shirt' vs 'Skirt' vs 'Shorts'<br>Line: 'I want the yellow skirt!'", speaking: "Shoot or click text assets hanging on a digital clothes line upon accurate phonemic decoding.", game: "TEXT RADAR: Identify orthographic character variations separating target items.", tip: "Connects close-up reading analysis to active gamified classroom victories." },
+                    { title: "Locker Spy Mission", script: "Data: 'The spy is wearing a black coat, green pants, and a white hat.'", speaking: "Decode cryptic outfit sheets silently to determine character profiles.", game: "AVATAR CLASSIFIER: Match text constraints to the correct character model on screen.", tip: "Enhances quiet scanning behaviors paired with instantaneous verbal declaration loops." },
+                    { title: "Texture Blend Chants", script: "Chant: 'A spotted sock! A striped shirt! A plain dress!'", speaking: "Introduce style attributes via rhythmic choral drills supported by image assets.", game: "PATTERN RADAR: Link text terminology to abstract visual fabric prints instantly.", tip: "Scales up descriptive vocabulary by relying on structured phonetic chants." },
+                    { title: "Laundry Mix-Up Fight", script: "A: 'This is MY red shirt!'<br>B: 'No! Your shirt is green! This is MY shirt!'", speaking: "Execute a high-argument 4-line script dealing with disputed gear ownership.", tip: "Funny conflicts within scripts drive massive spikes in authentic verbal output." },
+                    { title: "Color Morph Vox", script: "Vocal Spectrum: Red /e/ -> Yellow /e/ -> Green /i:/", speaking: "Transition vowel sounds smoothly matching shifts across an onscreen color gradient.", game: "WAVEFORM AUDIT: Did the team balance target vowel outputs accurately as the shade shifted?", tip: "Trains muscular control to alternate between unfamiliar phonemic landing zones." },
+                    { title: "Avatar Design Lab", script: "Directive: 'Put a blue jacket on the monkey and give him pink shoes!'", speaking: "Issue clothing modification commands to direct the teacher's canvas updates live.", game: "CANVAS SPRINT: First team to build a logical outfit configuration locks the score.", tip: "Boosts class agency by translating spoken output into real-time graphics changes." },
+                    { title: "Price Tag Readouts", script: "Menu: 'Blue T-Shirt: $5 | Red Skirt: $10' -> 'The blue t-shirt is five dollars!'", speaking: "Read store inventory panels aloud to purchase digital gear using functional frames.", game: "RETAIL CALC: Total up the invoice cost using text values. What is the total?", tip: "Introduces high-utility real-world survival vocabulary into early A1 training." }
+                ]
+            },
+            {
+                id: 7, title: "7. House & Rooms",
+                activities: [
+                    { title: "Haunted House Flashlight", script: "Hunter: 'Look! There is a green monster in the kitchen!'", speaking: "Sweep a digital flashlight across a dark layout map and shout out room claims instantly.", game: "SAFE ZONE: Read the text track. Which specific room contains zero danger flags?", tip: "High-suspense settings drive rapid, uninhibited sentence generation." },
+                    { title: "Furniture Layout Grid", script: "Card: 'The sofa goes in the living room next to the window.'", speaking: "Read directional labels aloud to guide furniture design block arrangement.", game: "BLUEPRINT VERIFICATION: Is the asset near the door or window? Quote coordinates.", tip: "Replaces standard writing logs with an active spatial layout challenge." },
+                    { title: "Preposition Trap Loops", script: "Chant: 'In the box! On the box! Under the box! Next to the box!'", speaking: "Chant locations while physically positioning a miniature item relative to a container.", game: "PREPOSITION SPEED: Accelerate loop tempos until structural drop errors occur.", tip: "Conquers the native error regarding missing standalone preposition markers." },
+                    { title: "Real Estate Pitch", script: "Card: 'This house has five bathrooms and a pool in the bedroom!'", speaking: "Read absurd real estate lists using an elite developer voice persona.", game: "MARKETING RECALL: Name the ridiculous feature hidden in the bedroom text section.", tip: "Provides humorous motivation for students to decode extended text blocks." },
+                    { title: "GPS Maze Navigator", script: "GPS: 'Go straight. Enter the bedroom. Stop next to the bed.'", speaking: "Deliver precise direction instructions to guide a blind classmate through a virtual maze.", game: "ROUTE AUDIT: First team to guide their character to exit safely logs victory.", tip: "Refines spatial articulation clarity and steady communication tracks." },
+                    { title: "Broken Appliance Skit", script: "Tenant: 'Help! My TV is in the bathroom and my fridge is in the garden!'", speaking: "Run a funny service call roleplay focusing on scrambled room layouts.", game: "INFRASTRUCTURE: Read the text chart. Where is the refrigerator currently located?", tip: "Frames noun-preposition arrays inside memorable interactive scripts." },
+                    { title: "Magnified Pixel Guess", script: "A: 'Is it a bed in a bedroom?'<br>B: 'No! It is a cooker in a kitchen!'", speaking: "Debate room object identities using heavily zoomed, pixelated image clues.", game: "PIXEL DECRYPTOR: First player to correctly identify room and item wins the sector.", tip: "Sparks authentic class conversation using basic vocabulary tools." },
+                    { title: "Blueprint Echo Tracing", script: "Chant: 'This is the hall. [Trace] This is the living room. [Trace square]'", speaking: "Trace home boundary vectors on screen while outputting room tags chorally.", game: "BOUNDARY SYNC: Did the speaker sync their voice with the visual border lines?", tip: "Directly links geometric border vectors to accurate phonemic label outputs." },
+                    { title: "Audio Location Trap", script: "Audio: [Frying sounds] -> Output: 'He is in the kitchen!'", speaking: "Analyze room sound effect components and state the correct spatial matching line.", game: "AUDIO RADAR: Select the text option that best accounts for the acoustic input.", tip: "Prioritizes environmental listening pathways over mechanical text translations." },
+                    { title: "The Speed Town Sprint", script: "Card: [GARAGE] -> Action: '[Simulates fast steering wheels]'", speaking: "Decode uppercase room vocabulary cards instantly and map them to physical gestures.", game: "REFLEX SCANNER: First team to show the proper gesture matching the text panel scores.", tip: "Accelerates connection tracks between text shapes and physical realities." }
+                ]
+            },
+            {
+                id: 8, title: "8. Food & Drinks",
+                activities: [
+                    { title: "Chef's Orders Script", script: "Chef: 'Quick! Chop the tomatoes! Pour the milk! Fry the fish!'", speaking: "Shout culinary command scripts to a partner who must execute kitchen miming rapidly.", game: "COMMAND RECALL: Which item did the chef command to chop instead of fry?", tip: "Hides dense instructional text reading inside an exciting high-speed game." },
+                    { title: "Taste Expression Run", script: "Board: Sour -> Sweet -> Bitter | Line: 'This lemon is so sour!'", speaking: "Deliver taste descriptors while simulating the facial muscle reaction to that flavor.", game: "SEMANTIC SENSOR: Which vocabulary term forces your eyes to squeeze shut tightly?", tip: "Reinforces semantic vocabulary attributes via physical motor memory links." },
+                    { title: "Countable Clap Loops", script: "Much: 'How MUCH milk?' [Stomp] | Many: 'How MANY apples?' [Clap]", speaking: "Organize food cards into grammatical categories via syncopated rhythm loops.", game: "QUANTIFIER ACCURACY: Catch the mistake if a countable item triggers a 'Much' stomp.", tip: "Directly trains the classic A1 mass/count noun distinction boundary." },
+                    { title: "Menu Order Marketplace", script: "Customer: 'I want a big burger and two cold cokes, please!'", speaking: "Read, evaluate invoice values, and procure food items using high-graphic menu boards.", game: "CHECKOUT AUDIT: Total up the cash cost based on text menu fields.", tip: "Provides high-value real-world survival fluency within interactive simulations." },
+                    { title: "The Silent Tasting", script: "A: '[Mimes peeling long fruit and chewing]' -> B: 'You are eating a sweet banana!'", speaking: "Mime food consumption. Partners guess the item and flavor parameters.", game: "GESTURE LOG: Pick the text label matching the eating method shown.", tip: "Promotes expressive visual communication alongside targeted structural language usage." },
+                    { title: "The Mystery Blender", script: "Card: 'Fish + Milk + Banana + Tomato' -> 'YUCK! That is a disgusting smoothie!'", speaking: "Read horrific ingredient lists to calculate text-based recipe scores.", game: "SMOOTHIE VOTE: Select the blend card that yields the highest grossness level.", tip: "Drives massive peer interaction spikes by utilizing shock value and comedy." },
+                    { title: "Food Truck Pitch", script: "Pitch: 'Welcome to Dino Burger! We have big T-Rex burgers and hot lava juice!'", speaking: "Outline a 3-item fast-food display card and read a promotional pitch aloud.", game: "INVENTOR CONQUEST: Vote on the most creative food truck menu options.", tip: "Nurtures public performance confidence within clear, high-interest structures." },
+                    { title: "Supermarket Sweep Memory", script: "List: 'Buy: 4 apples, 1 cheese, 2 milks, 5 fish.'", speaking: "Flash text strings for 8 seconds. Recall and state items aloud using proper plurals.", game: "INVENTORY RECOVERY: First squad to reproduce the complete shopping list wins.", tip: "Sharpens rapid short-term text processing and structural memory retention loops." },
+                    { title: "The Phonic Picnic", script: "Rule: 'Only pack short /æ/ words.' -> Turn: 'I pack an apple! No bananas!'", speaking: "Filter food option sheets using strict acoustic sound constraints verified via spoken claims.", game: "PHONIC GUARD: Block any items whose vowel properties don't match target boundaries.", tip: "Polishes sound classification skills during rapid vocabulary filtering tasks." },
+                    { title: "Bizarre Combo Reaction", script: "A: 'Do you want some chocolate chicken?' -> B: 'No! Chocolate chicken is terrible!'", speaking: "Spin random items. Read the combination aloud and display intense gut disgust.", game: "COMBO VELOCITY: First pair to clear the offer/rejection script gets the score.", tip: "Uses humor to reduce self-consciousness and multiply spontaneous speaking repetitions." }
+                ]
+            },
+            {
+                id: 9, title: "9. Animals & Habitats",
+                activities: [
+                    { title: "Safari Documentary Host", script: "Host: 'Look right! A big lion is running in the grass. It is fast!'", speaking: "Act as a wildlife film narrator, reading an onscreen scrolling description over muted video.", game: "DOCU-ALERT: Is the creature executing velocity movement or static sleep? Check text.", tip: "Binds tracking reading speeds to fluid cinematic visual vectors." },
+                    { title: "Animal Talent Auditions", script: "Monkey: 'I am a monkey. I can climb trees, but I can't fly.'", speaking: "Perform talent show scripts focusing on a sharp negative stop sound for 'can't'.", game: "AUDITION METRIC: State the exact physical limitation the monkey explicitly mentioned.", tip: "Locks modal verbs while correcting standard terminal unvoiced sound omissions." },
+                    { title: "Zoo Escape Tracker", script: "Clue: 'The animal has stripes. It is not in the jungle. It is in the water!'", speaking: "Read mystery clue strings to narrow down animal matches on a terrain matrix.", game: "CAPTURE SPRINT: First team to isolate the coordinate of the escaped beast wins.", tip: "Subverts boring comprehension by running an active criminal tracking investigation." },
+                    { title: "Syllable Animal Roars", script: "Drill: 'El-e-[ROAR!] / Hip-po-[ROAR!]-ta-mus / Gi-[ROAR!]-raffe'", speaking: "Shout multi-syllable wildlife terms, replacing the primary stress with an animal sound.", game: "METRIC STRESS: Identify which syllable slice held the target roaring volume pulse.", tip: "Highlights word stress rules dynamically using unforgettable auditory anchors." },
+                    { title: "Camouflage Spotter", script: "A: 'Where is the snake?' -> B: 'It is under the green leaf next to the rock.'", speaking: "Scan landscape photography to point out hidden biological components using location markers.", game: "HIDDEN MATRIX: Locate all camouflaged lifeforms before the tracking timer clears.", tip: "Ensures focused visual engagement during structural classroom talking rounds." },
+                    { title: "Guessing Fact Files", script: "Card: 'I have big ears. I have a long nose. I am grey. What am I?'", speaking: "Read structural fact cards aloud. Partners evaluate clues to map to animal drawings.", game: "FACT DECRYPTOR: Identify the matching wildlife target before countdown alerts fire.", tip: "Links listening comprehension drills to active text verification tasks." },
+                    { title: "Mythical Creature Lab", script: "A: 'My monster has a tiger head, a bird body, and shark teeth!'", speaking: "Combine wildlife attributes on a canvas block and describe the creation to classmates.", game: "HYBRID DESIGN: Point out the three source animals used to construct the creature.", tip: "Uses creative expression to bypass vocabulary fatigue from traditional reading lists." },
+                    { title: "Acoustic Mimic Loops", script: "Audio: [Wolf howl] -> 'Wolf! Wolf! A wild wolf is howling!'", speaking: "Replicate wildlife call sound files, then immediately fire a target structure sentence three times.", game: "DUPLEX SOUND: Match the biological audio signature to the correct written vocabulary tag.", tip: "Builds tight acoustic tracking pathways inside cognitive processing tracks." },
+                    { title: "Predator Prey Speed Deck", script: "Card: 'The lion is bigger than the cat. The shark is faster than the fish.'", speaking: "Read trait metrics aloud from a playing card deck to capture or escape opponent icons.", game: "COMPARATIVE VELOCITY: Pick the card whose data values outperform the competitor.", tip: "Lays clean cognitive foundations for subsequent comparative adjective blocks." },
+                    { title: "Habitat Rule Checklist", script: "Text: 'Desert Animals: No thick fur. Loves hot weather. Drinks little water.'", speaking: "Read landscape survivability parameters to evaluate if a creature asset can survive.", game: "HABITAT FORENSICS: Can a polar bear survive the desert text? Quote the fatal rule.", tip: "Encourages logical analytical processing within controlled A1 grammatical structures." }
+                ]
+            },
+            {
+                id: 10, title: "10. Weather & Seasons",
+                activities: [
+                    { title: "Green Screen Report", script: "Reporter: 'Oh no! It is raining cats and dogs in London! Grab your umbrella!'", speaking: "Deliver an energetic weather forecast in front of a shifting graphic climate map.", game: "METROPOLIS RADAR: Identify the specific city experiencing intense storms.", tip: "Shifts textual reading toward engaging theatrical display mechanics." },
+                    { title: "Suitcase Packing Race", script: "Alert: 'Attention! It is freezing and snowing outside!' -> 'Pack the heavy coat!'", speaking: "Identify changing weather slide parameters and read out matching gear tags rapidly.", game: "SUDDEN SHIFT: Weather flashes to 'BOILING'. First squad to drop winter tags scores.", tip: "Integrates weather terminology and clothing into an active multi-layered decision board." },
+                    { title: "Ambient Noise Orchestra", script: "Text: 'The wind is blowing. [Shakes paper] Rain is falling. [Taps desk]'", speaking: "Generate weather sound effects using workspace gear while reading the text sheet aloud.", game: "FOLEY SYMMETRY: Did the audio production match the text timeline markers?", tip: "Simultaneously engages auditory, visual, and manual feedback loops for deep learning." },
+                    { title: "Climate Scale Modulation", script: "Scale: Freezing -> Cold -> Warm -> Hot -> Boiling! | 'It is FREEZING!' [Shiver]", speaking: "Vocalize a weather phrase while altering voice texture and body posture.", game: "THERMAL PITCH: Rank performances from lowest temperature profile to highest.", tip: "Refines fine phonetic muscle control and expressive pronunciation habits." },
+                    { title: "Explorer Diary Scroll", script: "Text: 'Day 4. The sun is not shining. It is dark. The snow is very deep.'", speaking: "Deliver an explorer's journal entry script using high-drama voice narration methods.", tip: "Capitalizes on childhood pretend play habits to boost reading endurance levels." },
+                    { title: "Shifting Sky Vectors", script: "A: 'Move the dark cloud over the sun.' -> B: 'Look! Now it is cloudy and grey!'", speaking: "Rearrange interactive digital sky vectors on a screen board while narrating changes live.", game: "CLIMATE VECTOR: Forecast the upcoming room weather status using shifting text blocks.", tip: "Maintains strong group attention during structural grammar instruction routines." },
+                    { title: "Umbrella Preposition Run", script: "Chant: 'The umbrella is over the doll! The snow is on the umbrella!'", speaking: "Manipulate a desk-toy umbrella across target points while chanting locational frameworks.", game: "PREPOSITION SHIELD: Accelerate location shifts until syntax alignment fails.", tip: "Firmly grounds positional grammar via concrete physical interaction maps." },
+                    { title: "Climate Lie Detector", script: "Report: 'Tomorrow it is sunny, hot, and snowing red ice cream.' -> 'STOP! Fake!'", speaking: "Deliver a weather report containing an impossible climate event to test listener focus.", game: "IMPOSSIBILITY CRACKER: Identify the phrase that breaks real-world weather logic.", tip: "Uses surprise and comedy to maximize active listening indexes." },
+                    { title: "Global Radio Bulletins", script: "DJ: 'Good morning! It is sunny in Izmir and very rainy in Istanbul today!'", speaking: "Read weather station updates using an energetic radio host voice filter overlay.", game: "REGIONAL DATA: Which city requires purchasing rain gear text items?", tip: "Builds extended paragraph reading stamina without triggering display fatigue." },
+                    { title: "Satellite Map Sprints", script: "Text: [THUNDERSTORM] -> Action: '[Clicks cursor rapidly onto lightning clip]'", speaking: "Link climate vocabulary text cards to dynamic satellite imagery arrays under time pressure.", game: "SATELLITE CONQUEST: First user to anchor the text badge to the map element wins.", tip: "Accelerates visual word-recognition speeds and forms immediate concept links." }
+                ]
+            },
+            {
+                id: 11, title: "11. Action Verbs (-ing)",
+                activities: [
+                    { title: "Live Sports Caster", script: "Caster: 'Look at Ali! He is running! He is jumping! What a game!'", speaking: "Narrate a classmate's camera slow-motion action live using full present continuous.", game: "EVENT LOG: Read along with the audio. Name the two verbs the actor executed.", tip: "Treats the persistent native habit of adding a hard terminal 'G' sound." },
+                    { title: "The Ding-Dong Drill", script: "Chant: 'Ding-dong, ding-dong! Running, jumping, singing, all day long!'", speaking: "Loop the phonic chant while keeping your finger pressed to your chin to block jaw drops.", game: "CHIN LOCK: Spot which player dropped their jaw to trigger an illegal 'GE' suffix.", tip: "Enforces clean nasal word endings via mechanical physical constraints." },
+                    { title: "Action Remote Control", script: "Controller: 'Fast Forward! He is eating fast!' -> 'Rewind! He is eating backward!'", speaking: "Alter action speeds matching commands from a partner operating a remote control.", game: "VELOCITY MODULATION: Maintain present continuous syntax as action speed triples.", tip: "Maintains high physical motivation during intensive grammar drilling segments." },
+                    { title: "Comic Strip Voiceover", script: "Panel 1: 'Gasp! A monster is coming!' | Panel 2: 'Help! We are flying!'", speaking: "Voice high-action manga panels using extreme dramatic exclamation styles.", game: "SCENARIO TRIVIA: Identify why the characters are flying based on previous frames.", tip: "Reduces anxiety by replacing text walls with high-impact script fragments." },
+                    { title: "Speed Card Match", script: "Text: [SWIMMING] + Graphic: [Swimmer] -> Output: 'He is swimming! Check!'", speaking: "Race against a countdown clock to link written actions to correct illustrative cards.", game: "AUTOMATICITY: Clear all card pairings inside a strict 15-second filter.", tip: "Improves sight-word recognition and speeds direct-to-concept reading transitions." },
+                    { title: "Charade Action Train", script: "A: '[Passes mime down row]' -> Final: 'You are cooking!'", speaking: "Transmit a physical action down a chain until the final player decodes the target verb.", game: "GESTURE TELEGRAPHY: First team chain to map gesture to text scores.", tip: "Builds collaborative classroom language habits and maintains collective focus." },
+                    { title: "Verb Battery Station", script: "Flaw: 'He running.' -> [BUZZER] -> Fix: 'He IS running!'", speaking: "Identify flawed sentences missing auxiliary verbs and hit a desk buzzer to speak the patch.", game: "BATTERY CHARGER: First squad to supply the missing auxiliary locks the target point.", tip: "Highlights and treats the common A1 error of dropping helping verbs." },
+                    { title: "Shadow Play Tracker", script: "Audience: 'Look! A bird is flying!' -> 'No, a hand is moving!'", speaking: "Narrate shifting silhouette changes live using proper continuous syntax frames.", game: "SHADOW DECRYPTOR: Guess the hidden prop based on audience continuous description text.", tip: "Maintains exceptionally high group speaking metrics during extended presentations." },
+                    { title: "Silly Routine Script", script: "A: 'What are you doing?' -> B: 'I am playing the piano with my feet!'", speaking: "Execute a dialogue detailing absurd multi-tasking actions in pairs.", game: "ABSURDITY COUNT: Total up how many illegal tool applications were claimed.", tip: "Expands sentence length capacity by linking grammar to funny mental imagery." },
+                    { title: "Action Interrupter", script: "Teacher: 'FREEZE!' -> Student: 'I am washing my ears! x3'", speaking: "Lock posture instantly on command and chant your active verb statement three times.", game: "STATUE RETRIEVAL: Fail the turn if any limb shift occurs during the 3-repetition loop.", tip: "Injects spontaneous game pressure to test immediate grammatical recall under tension." }
+                ]
+            },
+            {
+                id: 12, title: "12. Daily Routines",
+                activities: [
+                    { title: "Liar Cross-Exam", script: "Candidate: 'I wake up at 6:00. I eat a shark for breakfast. I go to school at 8:00.'", speaking: "Deliver habit statements containing one massive hidden untruth with a straight face.", game: "FRAUD DETECTIVE: Read along. Which statement presents an impossible food claim?", tip: "Practices first-person present simple within an engaging social game frame." },
+                    { title: "Gamer Character Day", script: "Gamer: 'Super Mario wakes up at 10:00. He eats a mushroom. He jumps on turtles.'", speaking: "Voice the daily schedule of a video game hero using dramatic narrator tones.", game: "HERO QUEST: At what hour does the character begin? Extract digit from text logs.", tip: "Frames reading as attractive gaming lore rather than dry grammar sheets." },
+                    { title: "Time-Clock Chant", script: "Chant: '[Clock hits 7:00] I wake up! | [8:00] I eat bread!'", speaking: "Chant routine actions synchronized with shifts on an interactive model clock.", game: "CHRONO LOOP: Miss points if your cadence trails the clock hand transition.", tip: "Directly maps digital numbers and analog dials to everyday schedule syntax." },
+                    { title: "S-Ending Sorting Board", script: "s: Walks, Eats | z: Plays, Runs | iz: Watches, Washes", speaking: "Sort third-person singular verbs into phonics categories based on ending sound.", game: "MORPHEME RADAR: Hit the bell if the word requires /iz/ vocal addition.", tip: "Directly fixes missing third-person markers by calling out pronunciation shifts." },
+                    { title: "Routine Charade Race", script: "Mimer: '[Acts sleeping brush routine]' -> 'He washes his teeth at night!'", speaking: "Exaggerate routine behaviors while peers race to formulate the third-person descriptive text.", game: "THIRD PERSON SPRINT: First user to assemble accurate verb + marker text gets the point.", tip: "Leverages physical comedy to drive deep long-term vocabulary retention." },
+                    { title: "Schedule Builder Puzzle", script: "Block: 'Alex washes his dog at 4:00 PM. He does homework at 5:00 PM.'", speaking: "Read fragmented schedule details aloud to organize a chaotic timeline onto a clean grid.", game: "LOGIC ORDER: Arrange activity blocks to prevent overlapping schedule events.", tip: "Sharpens visual layout scanning and logical text organization strategies." },
+                    { title: "Alarm Clock Sprints", script: "Audio: [Alarm] -> Text: 'I brush my hair.' -> Student: 'I brush my hair!'", speaking: "Decode and read aloud target routine text strips before the countdown alarm triggers.", game: "PANIC READER: Cut down hesitation by launching sentences against sound keys.", tip: "Uses urgent acoustic cues to bypass stuttering blocks and accelerate delivery." },
+                    { title: "Celebrity Star Interview", script: "Reporter: 'Do you sleep in a gold bed?' -> Star: 'No! I sleep on the cold floor!'", speaking: "Roleplay an aggressive media interview detailing eccentric habits.", game: "MEDIA EXPOSED: Identify the star's sleeping surface choice from the interview log.", tip: "Boosts spontaneous output by letting kids be completely silly inside safe roles." },
+                    { title: "Habit Loop Symphony", script: "Beat: [Slap-Slap-Clap] 'I wash my face!' | [Slap-Slap-Clap] 'He washes his face!'", speaking: "Inject routine descriptions onto a continuous classroom desk-tapping percussion track.", tip: "Locks natural sentence flow and contraction habits using musical spacing templates." },
+                    { title: "Day in Reverse", script: "Script: 'I go to sleep. I brush my teeth. I eat dinner. I go home.'", speaking: "Read and verbalize a daily routine completely backward without shattering syntax rules.", game: "REVERSE MATRIX: First player to transition from bedtime to waking text without typos wins.", tip: "Pushes cognitive flexibility while demanding absolute focus on verb sequencing rules." }
+                ]
+            },
+            {
+                id: 13, title: "13. Sports & Hobbies",
+                activities: [
+                    { title: "Club Recruiter Skit", script: "Recruiter: 'Do you like gaming? Join our club! We play games every day!'", speaking: "Utilize persuasive frames to pitch custom fantasy clubs to peer group members.", game: "CLUB CALC: Tally up team recruitment numbers based on positive verbal choices.", tip: "Encourages persuasive intonation structures and organic turn-taking habits." },
+                    { title: "Can/Can't Balance Test", script: "Drill: 'I can play tennis! [Balance] I can't surf! [Drops foot]'", speaking: "Read capability arrays while performing single-leg balances, dropping to accentuate the negative 'T'.", game: "CAPABILITY AUDIT: Identify the aquatic skill the speaker lacks based on physical drops.", tip: "Uses direct kinetic feedback to map critical grammar values cleanly." },
+                    { title: "Gear Match Discovery", script: "Text: 'You need a big orange ball, a high hoop, and sports shoes for this hobby.'", speaking: "Decode equipment texts aloud to connect tools to correct athletic player models.", game: "INVESTIGATOR: Identify the target hobby using three noun equipment components.", tip: "Bridges noun classification groups directly to target action verbs." },
+                    { title: "Sports Arena Scream", script: "Audio: [Cheering] -> Text: 'He shoots! He scores! Wow!'", speaking: "Deliver broadcast sports commentary aloud over loud background audience tracks.", game: "DECIBEL CHAMPION: Maintain speech clarity values over loud audio interference.", tip: "Strengthens baseline breath control, projection, and performance confidence." },
+                    { title: "Hobby Mashup Lab", script: "Formula: Karate + Basketball = 'Karate Basketball' | 'You can kick the ball.'", speaking: "Synthesize two sport types randomly and explain the custom rules using basic modals.", game: "RULE BOOK: Spot structural violations within the new sport pitch sheet.", tip: "Forces authentic language synthesis by requiring explanation of an invented dynamic." },
+                    { title: "Sports Card Trader", script: "A: 'I have Messi. Speed 99. I want Ronaldo.' | B: 'Ronaldo has power 100!'", speaking: "Negotiate trade matrices by reading numerical statistics off player cards.", game: "MARKET BALANCE: Secure an optimal transaction value using card data.", tip: "Taps into collection instincts to maximize number and noun reading cycles." },
+                    { title: "Movement Collocation Sort", script: "Chant: 'PLAY football! GO swimming! DO karate!' [Stomp on shifts]", speaking: "Categorize sport terms under correct verb collocations using rapid kinetic routines.", game: "COLLOCATION DEFENSE: Buzz instantly if 'Do football' pairing drops.", tip: "Resolves tricky verb collocation rules via repetitive musical memory tracks." },
+                    { title: "Slow-Mo Coach Critique", script: "Coach: 'Stop! You are holding the racket wrong! Stand up! Look at the ball!'", speaking: "Issue live corrective training orders to a partner performing poorly.", game: "IMPERATIVE DRILL: Track how many verbal correction commands were accurately executed.", tip: "Builds imperative sentence formats and trains interactive loop handling." },
+                    { title: "Secret Fan Guessing", script: "Clue: 'My favorite hobby needs ice, a small black puck, and sharp skates.'", speaking: "Detail sports configurations relying strictly on tool nouns to disguise the identity.", game: "BEAST MODE DECRYPTOR: Match the gear list to the proper sports name card.", tip: "Reinforces precise vocabulary mapping without relying on native translations." },
+                    { title: "Championship Script", script: "Announcer: 'It is the final second! He runs! He shoots! GOAL! The crowd goes wild!'", speaking: "Read dramatic sports finale scripts in pairs using high-intensity announcement voices.", game: "FINALE STAMINA: Execute the script inside a tight 8-second window without errors.", tip: "Combats flat native monotone by introducing high-stakes emotional performance keys." }
+                ]
+            },
+            {
+                id: 14, title: "14. My Town & Places",
+                activities: [
+                    { title: "GPS Map Navigation", script: "GPS: 'Go straight for two blocks. Turn left at the cinema.'", speaking: "Act as an automated vehicle guidance tool reading directional maps to navigate an avatar.", game: "DESTINATION CACHE: What municipal building sits directly next to the terminal point?", tip: "Converts abstract directional tracking sheets into active navigation commands." },
+                    { title: "Missing Diamond Caper", script: "Card: 'Suspect was seen at 4:00 PM near the bank. He has a big bag.'", speaking: "Read detective sighting files aloud to locate a thief on an urban grid.", game: "CRIMINAL COORDINATE: Pinpoint the heist building using timeline textual clues.", tip: "Nests reading validation inside an intriguing crime mystery game." },
+                    { title: "Town Layout Builder", script: "A: 'Put the school behind the park.' -> B: 'The school is behind the park. Check!'", speaking: "Deliver urban design directives to organize structures on a map grid canvas.", game: "ARCHITECTURE LAB: Verify if graphical drops match the text logs.", tip: "Promotes collaborative puzzle resolution while reinforcing spatial syntax." },
+                    { title: "Lost Tourist Roleplay", script: "Tourist: 'Excuse me, I am lost! Where is the hospital?' | Local: 'Next to the cafe.'", speaking: "Execute basic civic orientation dialogues tracking destination vectors on map cards.", game: "TOURIST LIFELINE: Provide correct directions before the virtual travel clocks reset.", tip: "Isolates functional community language and hammers survival conversational skills." },
+                    { title: "City Noise Tracker", script: "Audio: [Sirens + bells] -> Text: '1. Police Station | 2. Church | 3. Toy Shop'", speaking: "Analyze city acoustic files and read out the matching facility name card.", game: "ACOUSTIC MATCH: Link the city noise sample to its text title label.", tip: "Uses multi-sensory cues to link concepts to text shapes without translation." },
+                    { title: "Postcard Reader Circle", script: "Postcard: 'Greetings from London! I am in a cafe next to a big museum. It is rainy!'", speaking: "Read micro travel postcard texts aloud so listening pairs deduce the travel spot.", game: "DEDUCTION CIRCLE: Extract landmarks from text to claim the target vector.", tip: "Keeps reading task sizes accessible, non-threatening, and easy for A1 readers." },
+                    { title: "The Mayor's Speech", script: "Mayor: 'Attention! The cinema is now free! The school is closed! Go eat ice cream!'", speaking: "Put on comedy garments and read community alerts using majestic tones.", game: "MAYOR DECREE: State the funny new law introduced for educational facilities.", tip: "Injects authority play mechanics into reading to drive extreme student buy-in." },
+                    { title: "Urban Preposition Trap", script: "Chant: 'The bank is BETWEEN the cafe and the shop! The park is BEHIND the school!'", speaking: "Chant spatial setups while manually adjusting layout blocks across desk zones.", game: "POSITION BLITZ: Swap tiles immediately as the text sequence alters speed frames.", tip: "Locks down spatial sentence structures by connecting to tactile manual tasks." },
+                    { title: "Real Estate Showroom", script: "Agent: 'Look at this building! It is between a volcano and a zoo!'", speaking: "Pitch crazy urban properties using a pre-written 3-point sales profile sheet.", game: "SHOWROOM AUDIT: Identify the natural environmental threat surrounding the property.", tip: "Creates structural speaking loops by converting grammar into active marketing pitch." },
+                    { title: "Speed Town Sprint", script: "Text: [SUPERMARKET] -> Action: '[Mimes pushing shopping carts frantically]'", speaking: "Decode uppercase municipal text boxes instantly and convert them to physical gestures.", game: "SIGHT WORD RUN: First squad to transition from text shape to kinetic response wins.", tip: "Maintains optimal pacing while creating instant links between script and physical meaning." }
+                ]
+            },
+            {
+                id: 15, title: "15. Transport & Travel",
+                activities: [
+                    { title: "Border Control Check", script: "Agent: 'Where are you going?' -> 'I am going to Paris by plane! Here is my ticket.'", speaking: "Validate travel metrics by cross-examining passenger parameters on boarding passes.", game: "MANIFEST FORENSICS: Identify the vehicular option chosen to travel to the destination.", tip: "High authenticity models keep immersion high and maximize voluntary speech outputs." },
+                    { title: "Vehicle Soundboard", script: "Text: 'The train goes chug-chug!' [Noise] | 'The rocket goes blast!'", speaking: "Produce vehicle sound effects synchronously while reading script text tags.", game: "AUDIO CAPTURE: Pair the voice pulse to its correct orthographic vehicle card.", tip: "Injects child-centric sound components into text blocks to avoid reader fatigue." },
+                    { title: "Ticket Counter Script", script: "Clerk: 'One ticket to London, please.' | Traveler: 'Ten pounds. The train leaves at five.'", speaking: "Execute transit transactional dialogues under strict game clock limitations.", game: "DEPARTURE RECALL: What hour does the transit asset depart according to text?", tip: "Nurtures practical A1 fluency frameworks for independent foreign travel settings." },
+                    { title: "Adjective Speed Race", script: "Chant: 'A plane is FAST! [Clap] A bike is SLOW! [Stomp] A train is LONG! [Jump]'", speaking: "Contrast transit velocity metrics through fast physical gestures linked to comparative syntax.", game: "SCALE CHALLENGE: First team to sequence speed values accurately wins.", tip: "Lays clear paths for comparative logic blocks via immediate somatic hooks." },
+                    { title: "Crazy Captain PA", script: "Captain: 'This is your captain. We are flying through a storm of flying bananas!'", speaking: "Broadcast erratic cockpit emergency announcements over a simulated flight microphone.", game: "EMERGENCY VERIFY: What unusual climate component did the captain declare?", tip: "Drives high-expression reading by setting reading inside an exciting simulated crisis." },
+                    { title: "Lost Luggage Finder", script: "Manifest: 'Lost: One big green suitcase with a yellow star ribbon.'", speaking: "Decode freight tracking parameters to locate lost property in a terminal grid.", game: "RECOVERY CODE: State the ribbon pattern attributes from the text manifest.", tip: "Focuses visual scanning on searching for explicit descriptive descriptors." },
+                    { title: "Travel Route Tracker", script: "Route: 'First, I go to Italy by boat. Then, Rome by train. Finally, I walk.'", speaking: "Trace complex itinerary vectors across world charts while announcing transport shifts aloud.", game: "LOGISTICS AUDIT: List the three consecutive travel modes in the itinerary.", tip: "Coordinates visual map analysis with spontaneous oral sentence generation." },
+                    { title: "Vehicle Assembly Line", script: "Designer: 'Give the bicycle four giant rocket engines and a sofa seat!'", speaking: "Formulate wild mechanical design commands to guide live visual asset updates on screen.", game: "CRAZY FACTORY: First team to construct a space-capable bike design updates score.", tip: "Stimulates creative word synthesis by letting kids command onscreen graphic transformations." },
+                    { title: "Phonic Ticket Gate", script: "Gate Code: 'Pass: /baɪ.sɪ.kəl/ - Bicycle!' -> 'Access Granted!'", speaking: "Decode and vocalize target transit phonics parameters to cross an automated checkpoint.", game: "CHECKPOINT TRIAL: Fail the access test if any word stress error matches native accents.", tip: "Gamifies pronunciation verification by converting clean speech into a key code." },
+                    { title: "The Commuter Shaker", script: "Passenger: 'Attention! The bus is shaking! Move left! Hold the handle!'", speaking: "Execute transport announcements while physically balancing inside a simulated turbulent cockpit.", game: "MOTION BALANCE: Clear the transit text block without losing posture rules.", tip: "Leverages intense kinesthetic action to completely drop self-consciousness barriers." }
+                ]
+            },
+            {
+                id: 16, title: "16. Shopping & Money",
+                activities: [
+                    { title: "Toy Store Bargaining", script: "Customer: 'How much is the robot?' | 'Fifty dollars.' | 'Twenty dollars?'", speaking: "Negotiate purchase values inside a busy simulated market using play currency.", game: "CLOSING VALUE: What was the definitive compromise transaction value reached?", tip: "Introduces real-world value estimation inside low-anxiety play structures." },
+                    { title: "The Price Tag Fixer", script: "Menu: 'Diamond Ring: $1 | Apple: $500' -> 'Stop! The apple is too expensive!'", speaking: "Identify irrational price points on an inventory panel and declare logical corrections.", game: "VALUE RADAR: Find the single item whose price parameters break market logic.", tip: "Demands fast textual reading loops by activating logic alarms instantly." },
+                    { title: "The Magical Wallet", script: "Manifest: 'You have: 3 gold coins, 1 paper note, 5 silver buttons.'", speaking: "Read hidden asset balance sheets aloud to help your partner compute purchasing power.", game: "TREASURY CALC: Total up the coin counts mentioned in the wallet manifest.", tip: "Blends basic math computing directly into textual decoding operations." },
+                    { title: "Shopping List Dash", script: "List: 'Buy: 3 red apples, 2 yellow hats, 1 giant ball.'", speaking: "Review grocery text for 6 seconds before reproducing item names using proper quantities.", game: "WAREHOUSE DASH: First player to accurately quote required item counts scores.", tip: "Improves visual short-term memory and target sight-word processing channels." },
+                    { title: "The Grumpy Shopkeeper", script: "Customer: 'I want this book, please.' -> 'No! No books today! Go away!'", speaking: "Execute a customer service skit where a hostile clerk blocks shopping using weird voices.", game: "REFUSAL LOG: Why did the clerk reject the buyer according to script parameters?", tip: "Lowers emotional anxiety by framing dialogues around humorous conflicts." },
+                    { title: "Receipt Audit Mystery", script: "Receipt: 'Total: 3 Pizzas = $30. Cash Paid: $50. Change: $10.' -> 'Wrong change!'", speaking: "Audit invoice text sheets to identify math discrepancies committed by a cashier.", game: "INVOICE FRAUD: Calculate the exact currency missing from the change text field.", tip: "Delivers exceptional functional literacy that mirrors everyday consumer events." },
+                    { title: "The Auctioneer Chant", script: "Chant: 'I have ten! Who gives twenty? Going once, going twice, SOLD!'", speaking: "Adopt an ultra-rapid auctioneer pattern to drive up classroom asset bid values live.", game: "SPEED BID: Catch the final high value number before the auction hammer drops.", tip: "Drastically boosts raw speech acceleration and scales linguistic confidence." },
+                    { title: "Department Store Maze", script: "Sign: 'Floor 1: Toys. Floor 2: Shoes. Floor 3: Food.' -> 'Go to Floor 3!'", speaking: "Read out mall directory levels to direct an onscreen character toward correct zones.", game: "DIRECTORY RUN: First team to cross three levels via textual commands wins.", tip: "Transforms spatial architectural layouts into active reading data parsing platforms." },
+                    { title: "The Luxury Item Pitch", script: "Pitch: 'This is a super pen! It writes in gold ink and costs one million dollars!'", speaking: "Read exaggerated promotional infomercial scripts to sell standard desktop tools.", game: "LUXURY DECODE: State the exact ridiculous cost marker on the pen text card.", tip: "Develops persuasive intonation tracks, descriptive lexicon depth, and syntax control." },
+                    { title: "Phonetic Vending Gate", script: "Code: 'Say: /tʃiːz/ - Cheese!' -> [Vending machine drop]", speaking: "Vocalize grocery terms off a digital dispenser, mapping vowel lengths to drop prizes.", game: "SOUND SCALE: Fail the item drop if vowel elongation falls short of specifications.", tip: "Directly isolates and sharpens long vs short vowel discrimination profiles." }
+                ]
+            },
+            {
+                id: 17, title: "17. School Subjects",
+                activities: [
+                    { title: "Crazy Timetable Maze", script: "Schedule: 'Monday at 9:00: Dragon Training. At 10:00: Flying Class.'", speaking: "Read erratic calendar blocks to move an avatar student through class maps safely.", game: "TIMETABLE DECRYPT: Identify the subject module scheduled for the second hour slot.", tip: "Converts routine calendar arrays into a high-immersion narrative game dashboard." },
+                    { title: "Mad Scientist Lab", script: "Scientist: 'Add two drops of blue juice! Shake the bottle! It is exploding!'", speaking: "Shout formulation instructions while your partner mimics dangerous chemistry steps.", game: "FORMULA MATRIX: Count the exact drop units of fluid requested in the textbook.", tip: "Wraps multi-step reading directives inside high-energy character roleplay frames." },
+                    { title: "Favorite Subject Debate", script: "A: 'I love Art because it is fun!' | B: 'No! Math is better because I love numbers!'", speaking: "Exchange rapid-fire subject preferences in a competitive tennis-style match layout.", game: "PREFERENCE FLOW: Maintain the debate loop for 45 seconds without native filler words.", tip: "Automates argument generation and basic preference justifications without boring drills." },
+                    { title: "Principal Megaphone", script: "Megaphone: 'Attention! Homework is now illegal! Candy is now lunch!'", speaking: "Read school code modification sheets using an authoritative headmaster voice filter.", game: "DECREE RECALL: What student task was officially declared illegal by text?", tip: "Drives intense engagement by completely subverting standard campus rules." },
+                    { title: "Secret Subject Charade", script: "Mimer: '[Mimes calculating numbers]' -> Class: 'Math! It is Math!'", speaking: "Act out an academic class experience while peers locate the matching course title card.", game: "CURRICULUM CLASSIFIER: First pair to pair physical charade to text card scores.", tip: "Connects abstract educational subjects to highly memorable physical memory triggers." },
+                    { title: "Homework Rescue Mission", script: "Clue: 'The key is under the English teacher's desk near the red book.'", speaking: "Read riddle data logs aloud to uncover security keys to a locked digital item chest.", game: "PRIZE VAULT: Steal the prize point by deciphering the location coordinate string first.", tip: "Delivers an immediate visual payout for tracking precise text strings." },
+                    { title: "Phonic Subject Sort", script: "2: His-tory, Sci-ence | 3: Ge-o-gra-phy, Com-pu-ters", speaking: "Group subject labels by syllable values using physical table knocks and synchronized counts.", game: "BEAT BOX CHAMPION: Pinpoint the subject matching the exact three-beat count array.", tip: "Directly patterns native word stress habits to treat flat alignment traits." },
+                    { title: "Substitute Teacher", script: "Sub: 'Open your notebooks! Draw a green cat! Speak like a frog!'", speaking: "Assume management of the class presentation slide, reading directives aloud to peers.", game: "SUBSTITUTE COMP: Did the teacher order a blue cat or a green cat?", tip: "Shifts conversational control directly to the learner to build leadership speech metrics." },
+                    { title: "Book Cover Explorer", script: "Blurb: 'This book tells secrets about ancient kings, golden pyramids, and old battles.'", speaking: "Analyze cover blurb descriptions out loud so your partner identifies the correct textbook.", game: "DEDUCTIVE COVER: Pair the written summary string with the historical design cover.", tip: "Accelerates abstract logical tracking and builds paragraph reading analysis speeds." },
+                    { title: "Gym Class Command Loop", script: "Coach: 'Run on the spot! Jump three times! Touch your toes! Stop!'", speaking: "Deliver physical fitness training orders off a text script to drive group exercise drills.", game: "FITNESS TRACK: Drop out if your movement misses the text command line.", tip: "Boosts blood flow and maintains peak oxygen levels across remote digital screens." }
+                ]
+            },
+            {
+                id: 18, title: "18. Shapes & Sizes",
+                activities: [
+                    { title: "Geometry Blueprint", script: "Architect: 'Draw a big circle. Put a small triangle inside the circle.'", speaking: "Deliver precise structural building codes aloud to guide your partner's blind sketch.", game: "BLUEPRINT CHECK: Inspect the final sketch. Does the circle form the outer limit?", tip: "Transforms geometric vocabulary into immediate functional physical sketch templates." },
+                    { title: "Compare-o-Meter Slap", script: "Ref: 'BIGGER!' -> [Student clicks house over mouse] -> 'Check!'", speaking: "Slap displayed image nodes based on comparative scale terms called by a referee.", game: "SCALE ADJECTIVE: Match the comparative suffix block to its correct physical graphic scale.", tip: "Builds intuitive lexical suffix tracking without dry lecture routines." },
+                    { title: "Alien Spaceship Match", script: "Data: 'The spaceship has a triangle body, square windows, and a rectangle antenna.'", speaking: "Decode cryptic spacecraft hull records aloud to pick the matching threat on a radar map.", game: "SPACECRAFT DECRYPT: Isolate the target vessel using three shape criteria markers.", tip: "Transforms technical descriptive reading into an exciting tactical decryption event." },
+                    { title: "Shape Symphony Chant", script: "Chant: 'Circle! Square! Triangle! Star!' [Draw shapes in air]", speaking: "Draw geometric outlines in screen space while chanting phonetic profiles to a beat box.", game: "SYMMETRY AUDIT: Did the hand gesture accurately trace the spoken text shape?", tip: "Enlists spatial-motor networks to lock down challenging geometric terms cleanly." },
+                    { title: "Microscopic Zoom Debate", script: "A: 'I see a curved line. Is it a circle?' -> B: 'No! It is a sharp triangle!'", speaking: "Debate the origin of a highly magnified line segment using complete sentences.", game: "PIXEL ENIGMA: First group to guess the source shape asset secures the quadrant.", tip: "Sparks authentic target speaking through high-curiosity visual mystery loops." },
+                    { title: "Target Scale Vocalizer", script: "Micro: [Whisper] | Mega: [Shout] -> 'Look at the square!'", speaking: "Scale your speech volume to correspond with the size of the shape card shown.", game: "VOLUME CONTROLLER: Drop score if voice amplitude mismatches the visual scale.", tip: "Trains intentional breath control loops to eradicate soft speech patterns." },
+                    { title: "Tangram Position Commands", script: "Director: 'Move the red square to the top. Put the green triangle under it.'", speaking: "Issue spatial positioning codes to move digital block segments into alignments.", game: "PUZZLE SOLVER: Complete the shape assembly before the master timer fires.", tip: "Provides instant feedback connecting preposition accuracy to visual task status." },
+                    { title: "Pattern Break Tracker", script: "Sequence: [Square -> Circle -> Square -> Circle -> TRIANGLE]", speaking: "Scan shape pattern matrices to isolate and name the element that violates the chain.", game: "SEQUENCE DEFENSE: Shout the position index of the text-breaking item instantly.", tip: "Sharpens sequential observation tracking alongside rapid vocabulary verbalization." },
+                    { title: "Origami Instruction Echo", script: "Guide: 'Fold the paper square in half. Make a long triangle.'", speaking: "Execute physical paper folding steps matching instructions read aloud by a partner.", game: "PAPER FOLD FORENSICS: Does your current paper match the geometric text profile?", tip: "Pairs tactile fine motor execution with close listening comprehension metrics." },
+                    { title: "Geometric Object Hunt", script: "Rule: 'Find three rectangle shapes in your room right now!'", speaking: "Scan your workspace to identify structures matching complex shape text rules.", game: "HOME SCANNER: First player to display three matching items on camera secures the point.", tip: "Brings English vocabulary directly into contact with the learner's actual living space." }
+                ]
+            },
+            {
+                id: 19, title: "19. Wild Animals & Nature",
+                activities: [
+                    { title: "Jungle Soundscape Host", script: "Host: 'We are walking deep in the rainforest. Beware of the big green snake!'", speaking: "Deliver an exotic safari journey script over background tracks of wild jungle growls.", game: "SOUNDSCAPE STAMINA: Read the entire text log without breaking rhythm despite background noises.", tip: "Nurtures text tracking endurance and oral consistency over acoustic noise profiles." },
+                    { title: "Dangerous Beast Profiles", script: "Profile: 'Danger Level: 10/10. Weapon: Sharp teeth. Speed: Very fast. Size: Big.'", speaking: "Read extreme predator metric sheets so partners match them to the correct creature card.", game: "STAT SHEET QUIZ: What numerical danger value characterizes this wilderness threat?", tip: "Hooks reading interest by framing analysis inside gaming numbers and stats tracking." },
+                    { title: "Explorer Compass Guide", script: "Navigator: 'Go North into the forest. Move East past the river. Avoid the bear cave.'", speaking: "Shout navigational orientation rules to guide a virtual traveler across a topography grid.", game: "TOPO ESCAPE: Guide your team away from the bear vector before map shifts occur.", tip: "Pairs macro environmental lexicon with operational location syntax fields." },
+                    { title: "Phonetic Stress Roars", script: "Drill: 'Cro-co-[GROWL!] / Kang-a-[GROWL!] / Mos-qui-[GROWL!]'", speaking: "Vocalize multi-syllable nature nouns, stamping a roar directly onto the primary stress.", game: "PHONIC ACCENT: Pinpoint the syllable location that received the roar pulse volume.", tip: "Highlights word stress structures clearly using fun, child-centric acoustic cues." },
+                    { title: "Camouflage Spotter", script: "A: 'Do you see the leopard?' -> B: 'It is sleeping behind the brown branches.'", speaking: "Examine wildlife photography to report hidden biological hazards using prepositions.", game: "CAMOUFLAGE CONQUEST: Find all camouflaged lifeforms before the timer expires.", tip: "Maintains intense peer focus values throughout extended spatial speaking loops." },
+                    { title: "Ecosystem Sort Race", script: "Prompt: 'Polar Bear -> Thick white fur. Lives on cold ice.' [Move to Arctic Box]", speaking: "Sort biological cards into regional climate boxes based on rapid text rule analysis.", game: "SURVIVABILITY AUDIT: Classify target blocks before regional climate clocks run down.", tip: "Expands conceptual taxonomy sorting models alongside basic language decoding." },
+                    { title: "Cryptid Sighting Skit", script: "Witness: 'I see a giant monkey with wings! It is eating a tree!'", speaking: "Execute an energetic dialogue between a panicked witness and a cynical forest ranger.", game: "WITNESS SUMMARY: List the two impossible physical attributes the monster possessed.", tip: "Uses absurd fantasy to lower speaking filters and multiply voluntary text output." },
+                    { title: "Footprint Tracking Board", script: "Text: 'This creature has heavy claws, walks on two legs, and breaks small trees.'", speaking: "Read tracking data sheets aloud to pair footprint casts with their wildlife creators.", game: "FORENSIC COMP: Match the written claw description to the display cast vector.", tip: "Converts standard reading assignments into an immersive detective tracking puzzle." },
+                    { title: "Survival Pack Audit", script: "Inventory: 'One rope, one water bottle, one flashlight, zero meat.'", speaking: "Read equipment manifests aloud to evaluate survival viability against hazard slides.", game: "PACK CRITIQUE: State the missing gear classification that threatens safety.", tip: "Encourages logical deductive speech pathways by using basic modal sentence filters." },
+                    { title: "Echo Wilderness Calls", script: "Teacher: '[Echo] R-a-i-n-f-o-r-e-s-t.' -> Class: '[Echoes] R-a-i-n-f-o-r-e-s-t!'", speaking: "Replicate precise eco-acoustic qualities introduced by the teacher on key vocabulary terms.", game: "RESONANCE: Vote on which team duplicated the sound signature best.", tip: "Refines deep phonemic capture and retention using playful auditory simulation models." }
+                ]
+            },
+            {
+                id: 20, title: "20. Prepositions of Place",
+                activities: [
+                    { title: "The Thief in the Room", script: "Detective: 'Is the money behind the sofa?' | Thief: 'No! Search under the rug!'", speaking: "Decode riddle sheets aloud to help your partner track a hidden diamond across a room grid.", game: "CONCEALMENT AUDIT: Where did the script lines state the treasure was hidden?", tip: "Directly treats native errors involving replacement of standalone prepositions with noun suffixes." },
+                    { title: "Blindfolded Avatar", script: "Controller: 'Drop the ball! No! Move it right! Put it inside the basket!'", speaking: "Issue rapid real-time spatial commands to direct a blind classmate's object drops.", game: "SPATIAL TRIAL: Drop out if your command leads to a target drop miss.", tip: "Forces strict grammatical accuracy since errors break game status live." },
+                    { title: "Structural Block Coding", script: "Code: 'Blue block on red block. Green block next to blue block.'", speaking: "Read micro positional strings to coordinate building a specific desk block layout.", game: "BLUEPRINT SHOWDOWN: First team to build the exact model in text records wins.", tip: "Transforms abstract preposition rules into a high-focus spatial construction challenge." },
+                    { title: "Preposition Ping Pong", script: "A: 'ON the table!' [Throws ball] -> B: 'UNDER the chair!' [Catches and throws]", speaking: "Bounce spatial phrases across teams rapidly using a plush ball under strict tempo limits.", game: "VELOCITY LOOP: Maintain the spatial phrase exchange without errors for 30 seconds.", tip: "Builds uninhibited automatic response reflexes deep inside language structures." },
+                    { title: "Absurd Picture Alarm", script: "Slide: [A massive cow floating inside a small goldfish bowl] -> 'Help!'", speaking: "Identify completely unexpected item positions and state them using full target frames.", game: "ABSURDITY SPRINT: First team to deliver a flawless claim card scores points.", tip: "Uses surreal humor to bypass reading blocks and jump-start rapid language production." },
+                    { title: "Secret Treasure Map Code", script: "Text: 'The gold is between the palm trees, behind the skull rock, under the sand.'", speaking: "Read geographic directional sheets aloud to discover secret map coordinate locations.", game: "DECRYPTION VAULT: Pinpoint the exact visual pixel coordinate of the prize from text.", tip: "Provides an immediate, highly motivating reward for close, analytical text decoding." },
+                    { title: "Desktop Blueprint Match", script: "Sheet: 'The computer sits on the desk. The bin is under the desk.'", speaking: "Match spatial rules to three bedroom configuration illustrations on display panels.", tip: "Refines accuracy levels when matching visual properties to paragraph descriptions." },
+                    { title: "Mirror Architecture Run", script: "A: 'My red pen is behind my cup.' -> B: '[Moves pen] Check!'", speaking: "Construct a secret layout behind a divider and describe the spatial state to guide partner's build.", game: "BUILD VERIFICATION: Remove the divider. Do the two layouts match exactly?", tip: "Demands precise, functional oral communication where clarity determines game outcomes." },
+                    { title: "Preposition Stomp Chant", script: "Chant: 'IN! [Pockets] / ON! [Head] / UNDER! [Crouch] / NEXT TO! [Step Right]'", speaking: "Execute rapid kinesthetic movements matching location terminology chanted in rhythmic unison.", game: "SOMATIC RADAR: Eliminate players whose gestures mismatch the spoken location tag.", tip: "Engages massive body networks to anchor vocabulary tags permanently into memory." },
+                    { title: "Zoom Grid Window Hunt", script: "A: 'Where is your water bottle?' -> B: 'It is next to my computer screen!'", speaking: "Utilize the web camera boundaries to state spatial relationships of real workspace tools.", game: "BOX MATRIX: Locate an item in a peer's window based entirely on their location text.", tip: "Bridges abstract syntax concepts cleanly into the student's actual physical home environment." }
+                ]
+            }
+        ];
+
+        // ── RENDER ──
+        var sidebarList = document.getElementById("sidebarList");
+        var panelsContainer = document.getElementById("panelsContainer");
+        var selectTopic;
+
+        DATA.forEach(function(topic, index) {
+            var li = document.createElement("li");
+            li.className = "topic-item" + (index === state.activeTopic ? " active" : "");
+            li.textContent = topic.title;
+            li.setAttribute("data-target", "panel-" + topic.id);
+            li.setAttribute("role", "option");
+            li.setAttribute("tabindex", "0");
+            li.setAttribute("aria-selected", index === state.activeTopic ? "true" : "false");
+            li.onclick = function() { selectTopic(index); };
+            li.onkeydown = function(e) {
+                if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectTopic(index); }
+            };
+            sidebarList.appendChild(li);
+
+            var panel = document.createElement("div");
+            panel.className = "topic-panel" + (index === state.activeTopic ? " active" : "");
+            panel.id = "panel-" + topic.id;
+            panel.dataset.topicId = topic.id;
+
+            var h2 = document.createElement("h2");
+            h2.className = "panel-title";
+            h2.textContent = topic.title;
+            panel.appendChild(h2);
+
+            var actList = document.createElement("div");
+            actList.className = "activity-list";
+
+            topic.activities.forEach(function(act, actIndex) {
+                var card = document.createElement("div");
+                card.className = "activity-card";
+                card.dataset.topicId = topic.id;
+                card.dataset.actIndex = actIndex;
+                if (isComplete(topic.id, actIndex)) card.classList.add("activity-card-done");
+
+                var header = document.createElement("div");
+                header.className = "activity-header";
+                var num = document.createElement("div");
+                num.className = "activity-number";
+                num.textContent = actIndex + 1;
+                var h3 = document.createElement("h3");
+                h3.textContent = act.title;
+                header.appendChild(num);
+                header.appendChild(h3);
+                card.appendChild(header);
+
+                var boxContainer = document.createElement("div");
+                boxContainer.className = "box-container";
+
+                var sBox = document.createElement("div");
+                sBox.className = "script-box";
+                sBox.setAttribute("onclick", "copyToChat(this)");
+                sBox.setAttribute("tabindex", "0");
+                sBox.setAttribute("role", "button");
+                sBox.setAttribute("aria-label", "Reading script. Click to copy.");
+                sBox.innerHTML = '<span class="box-label"><span>READING SCRIPT / PROMPT:</span><span class="click-to-copy">Click to copy</span></span>' + act.script;
+
+                var spBox = document.createElement("div");
+                spBox.className = "speaking-box";
+                spBox.innerHTML = '<span class="box-label">SPEAKING TASK:</span>' + act.speaking;
+
+                var cBox = document.createElement("div");
+                cBox.className = "comp-box";
+                cBox.innerHTML = '<span class="box-label">COMPREHENSION CHALLENGE:</span>' + act.game;
+
+                boxContainer.appendChild(sBox);
+                boxContainer.appendChild(spBox);
+                boxContainer.appendChild(cBox);
+                card.appendChild(boxContainer);
+
+                var tip = document.createElement("div");
+                tip.className = "tip-tag";
+                tip.innerHTML = "<strong>Turkish Learner Focus:</strong> " + act.tip;
+                card.appendChild(tip);
+
+                var completeBtn = document.createElement("button");
+                completeBtn.className = "activity-complete-btn";
+                completeBtn.textContent = isComplete(topic.id, actIndex) ? "Completed" : "Mark Done";
+                completeBtn.setAttribute("aria-label", "Mark activity as " + (isComplete(topic.id, actIndex) ? "incomplete" : "complete"));
+                completeBtn.onclick = (function(tid, aidx) {
+                    return function(e) {
+                        e.stopPropagation();
+                        toggleComplete(tid, aidx);
+                    };
+                })(topic.id, actIndex);
+                card.appendChild(completeBtn);
+
+                actList.appendChild(card);
+            });
+
+            panel.appendChild(actList);
+            panelsContainer.appendChild(panel);
+        });
+
+        selectTopic = function(idx) {
+            state.activeTopic = idx;
+            saveState(state);
+            document.querySelectorAll(".topic-item").forEach(function(el) {
+                el.classList.remove("active");
+                el.setAttribute("aria-selected", "false");
+            });
+            document.querySelectorAll(".topic-panel").forEach(function(el) {
+                el.classList.remove("active");
+            });
+            var item = sidebarList.children[idx];
+            if (item) {
+                item.classList.add("active");
+                item.setAttribute("aria-selected", "true");
+            }
+            var panel = document.getElementById("panel-" + DATA[idx].id);
+            if (panel) panel.classList.add("active");
+            closeSidebar();
+        };
+
+        renderProgress();
+        updateTimerDisplay();
+    })();
+    </script>
+</body>
+</html>

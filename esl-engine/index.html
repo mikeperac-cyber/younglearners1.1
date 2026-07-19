@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#0f172a">
+<meta name="description" content="ESL Oracy Engine - 275 speaking activities for A1/A2 young learners">
+<title>ESL Oracy Engine</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<div id="sidebar" class="sidebar" role="navigation" aria-label="Topics"></div>
+
+<div id="main" class="main-content">
+  <header class="topbar">
+    <button onclick="toggleSidebar()" class="btn-icon hamburger" aria-label="Open menu">☰</button>
+    <span class="topbar-title">ESL Oracy Engine</span>
+    <div class="topbar-actions">
+      <button onclick="showView('home');renderHome()" class="btn-icon" aria-label="Home">🏠</button>
+      <button onclick="showFlashcards()" class="btn-icon" aria-label="Flashcards">🃏</button>
+      <button onclick="toggleDark()" class="btn-icon" aria-label="Toggle dark mode">🌓</button>
+    </div>
+  </header>
+
+  <div id="view-home" class="view"></div>
+  <div id="view-topic" class="view" style="display:none"></div>
+  <div id="view-activity" class="view" style="display:none"></div>
+  <div id="view-srs" class="view" style="display:none"></div>
+  <div id="view-flashcards" class="view" style="display:none"></div>
+  <div id="view-dashboard" class="view" style="display:none"></div>
+  <div id="view-daily" class="view" style="display:none"></div>
+  <div id="view-search" class="view" style="display:none"></div>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script src="data-p1.js"></script>
+<script src="data-p2.js"></script>
+<script src="data-p3.js"></script>
+<script src="data-twisters.js"></script>
+<script src="data-chants.js"></script>
+<script src="data-roleplays.js"></script>
+<script src="data-seasonal.js"></script>
+<script src="engine.js"></script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}</script>
+</body>
+</html>

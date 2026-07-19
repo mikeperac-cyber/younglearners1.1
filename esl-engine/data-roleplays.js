@@ -1,0 +1,8 @@
+var DATA_ROLEPLAYS = [
+{id:27,title:"27. Role-Play Scenarios",acts:[
+{ti:"At the Doctor",sc:"Doctor: 'What's the matter?' Patient: 'I have a headache. My head hurts.' Doctor: 'I see. Take this medicine.'",sp:"Act as the patient. Describe your symptoms.",gm:"What medicine did the doctor give?",tp:"article",tip:"'A headache' — article + noun. But 'My head hurts' — possessive, no article.",em:"🩺"},
+{ti:"At the Restaurant",sc:"Waiter: 'Would you like a menu?' Customer: 'Yes, please. I'd like a pizza and some water.' Waiter: 'Anything else?'",sp:"Order your favourite meal.",gm:"What did the customer order?",tp:"article",tip:"'A pizza' — article. 'Some water' — uncountable, no article. 'Anything else' — common phrase.",em:"🍕"},
+{ti:"Lost in the Mall",sc:"Child: 'Excuse me, where is the toy shop?' Shopkeeper: 'Go straight. Turn left. It's next to the bookshop.'",sp:"Ask for directions.",gm:"Where is the toy shop?",tp:"preposition",tip:"'Next to the bookshop' — preposition + article + noun. 'Go straight' — imperative.",em:"🏬"},
+{ti:"Calling a Friend",sc:"A: 'Hello! What are you doing on Saturday?' B: 'Nothing! Why?' A: 'Let's go to the cinema!'",sp:"Call a friend and make plans.",gm:"What are they doing on Saturday?",tp:"continuous",tip:"'What are you doing?' — present continuous for future plans. Turkish uses same form.",em:"📞"},
+{ti:"At the Ice Cream Shop",sc:"Server: 'What flavour would you like?' Child: 'Can I have strawberry, please?' Server: 'One scoop or two?'",sp:"Order ice cream.",gm:"What flavour did the child choose?",tp:"article",tip:"'Strawberry' — no article for flavours. 'A scoop' — article + noun.",em:"🍦"}]}
+];
